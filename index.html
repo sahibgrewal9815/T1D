@@ -6,6 +6,7 @@
 <meta name="theme-color" content="#F3D2C6">
 <title>T1DTMD · carbs & insulin</title>
 <link rel="manifest" href="manifest.json">
+<script>if ("serviceWorker" in navigator) addEventListener("load", () => navigator.serviceWorker.register("sw.js").catch(() => {}));</script>
 <link rel="icon" href="icon-32.png" type="image/png">
 <link rel="apple-touch-icon" href="icon-180.png">
 <meta name="apple-mobile-web-app-capable" content="yes">
@@ -1617,7 +1618,6 @@ function adminApp() {
   return { async start() { await load(); showView("users"); } };
 }
 
-if ("serviceWorker" in navigator) navigator.serviceWorker.register("sw.js").catch(() => {});
 
 </script>
 </body>
