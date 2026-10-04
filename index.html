@@ -3,8 +3,8 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<meta name="theme-color" content="#1E2340">
-<title>Khurak · carbs & insulin</title>
+<meta name="theme-color" content="#0E1510">
+<title>T1DTMD · carbs & insulin</title>
 <link rel="manifest" href="manifest.json">
 <link rel="icon" href="icon.svg" type="image/svg+xml">
 <link rel="apple-touch-icon" href="icon-192.png">
@@ -14,146 +14,171 @@
 <link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,400;12..96,600;12..96,800&display=swap" rel="stylesheet">
 <style>
 :root{
-  --ink:#1E2340; --ink-2:#3B4166; --muted:#646B8C;
-  --bg:#EEF1F6; --card:#FFFFFF; --line:#D9DEEA;
-  --pink:#B5175E; --pink-soft:#F9E3EE;
-  --saffron:#F5B700; --ok:#1F6B4B; --ok-soft:#E1F2EA;
-  --warn:#B3261E; --warn-soft:#FBE7E5; --amber-soft:#FFF4D6;
-  --r-lg:20px; --r-md:14px; --r-sm:10px;
+  --bg:#0E1510; --bg-2:#132017;
+  --glass:rgba(210,255,220,.06); --glass-2:rgba(210,255,220,.10); --glass-line:rgba(190,255,205,.14);
+  --text:#E8F3EA; --muted:#93A898; --line:rgba(190,255,205,.12);
+  --green:#6FBF7A; --green-2:#8FD49A; --green-deep:#2F6B3B; --on-green:#0C1A0F;
+  --saffron:#F4C430;
+  --warn:#FF8A80; --warn-bg:rgba(255,110,100,.12); --warn-line:rgba(255,120,110,.30);
+  --amber:#F6D58A; --amber-bg:rgba(246,200,90,.10); --amber-line:rgba(246,200,90,.28);
+  --ok:#9FE0AA; --ok-bg:rgba(111,191,122,.12); --ok-line:rgba(111,191,122,.30);
+  --r-lg:20px; --r-md:14px; --r-sm:12px;
+  --blur:blur(18px) saturate(140%);
   --font:"Bricolage Grotesque", ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+  color-scheme:dark;
 }
 *{box-sizing:border-box}
-html,body{margin:0;height:100%}
-body{font-family:var(--font);background:var(--bg);color:var(--ink);font-size:16px;line-height:1.45;-webkit-tap-highlight-color:transparent}
+html,body{margin:0;min-height:100%}
+body{font-family:var(--font);color:var(--text);font-size:16px;line-height:1.45;-webkit-tap-highlight-color:transparent;
+  background:
+    radial-gradient(60vmax 45vmax at 85% -5%, rgba(95,175,106,.30), transparent 60%),
+    radial-gradient(50vmax 40vmax at -10% 45%, rgba(40,120,70,.28), transparent 60%),
+    radial-gradient(45vmax 35vmax at 90% 100%, rgba(150,200,90,.14), transparent 60%),
+    linear-gradient(180deg,var(--bg-2),var(--bg));
+  background-attachment:fixed}
 button,input,select{font:inherit;color:inherit}
 button{cursor:pointer}
-:focus-visible{outline:3px solid var(--pink);outline-offset:2px}
-.app{max-width:560px;margin:0 auto;min-height:100%;padding:calc(env(safe-area-inset-top,0px) + 14px) 16px calc(env(safe-area-inset-bottom,0px) + 170px)}
+:focus-visible{outline:2px solid var(--green-2);outline-offset:2px}
+.app{max-width:560px;margin:0 auto;padding:calc(env(safe-area-inset-top,0px) + 16px) 16px calc(env(safe-area-inset-bottom,0px) + 180px)}
+.glass{background:var(--glass);border:1px solid var(--glass-line);-webkit-backdrop-filter:var(--blur);backdrop-filter:var(--blur)}
 
 /* header */
-.top{display:flex;align-items:baseline;justify-content:space-between;gap:12px;margin-bottom:12px}
-.brand{font-weight:800;font-size:1.6rem;letter-spacing:-.02em;margin:0}
-.brand small{font-weight:400;font-size:.95rem;color:var(--muted);margin-left:6px}
+.top{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:14px}
+.brand{font-weight:800;font-size:1.65rem;letter-spacing:-.01em;margin:0;color:var(--green)}
+.brand span{color:var(--text)}
+.who{display:flex;align-items:center;gap:8px;border-radius:999px;padding:4px 12px 4px 4px;font-size:.88rem;color:var(--muted);border:1px solid var(--glass-line);background:var(--glass);-webkit-backdrop-filter:var(--blur);backdrop-filter:var(--blur)}
+.who b{color:var(--text);font-weight:600}
+.avatar{width:30px;height:30px;border-radius:50%;display:grid;place-items:center;background:linear-gradient(140deg,var(--green-2),var(--green-deep));color:var(--on-green);font-weight:800;font-size:.85rem;flex:0 0 auto}
+.avatar.lg{width:64px;height:64px;font-size:1.5rem}
+
 .meals{display:flex;gap:6px;overflow-x:auto;padding-bottom:2px;margin-bottom:14px;scrollbar-width:none}
 .meals::-webkit-scrollbar{display:none}
-.chip{border:1.5px solid var(--line);background:var(--card);border-radius:999px;padding:7px 14px;white-space:nowrap;font-size:.95rem}
-.chip[aria-pressed="true"]{background:var(--ink);border-color:var(--ink);color:#fff}
-.chip.add{border-style:dashed}
+.chip{border:1px solid var(--glass-line);background:var(--glass-2);border-radius:999px;padding:7px 15px;white-space:nowrap;font-size:.93rem;color:var(--text)}
+.chip[aria-pressed="true"]{background:var(--green);border-color:var(--green);color:var(--on-green);font-weight:600}
+.chip.add{border-style:dashed;background:transparent;color:var(--green-2)}
 
-.card{background:var(--card);border-radius:var(--r-lg);padding:16px;margin-bottom:12px}
+.card{background:var(--glass);border:1px solid var(--glass-line);-webkit-backdrop-filter:var(--blur);backdrop-filter:var(--blur);border-radius:var(--r-lg);padding:16px;margin-bottom:12px}
 h2{font-size:1.05rem;margin:0 0 10px;font-weight:600}
 .muted{color:var(--muted)}
 .small{font-size:.88rem}
 
-/* setup + notes */
-.setup{background:var(--ink);color:#fff}
-.setup p{margin:4px 0 12px;color:#C9CDE6}
-.note{border-radius:var(--r-md);padding:11px 13px;margin-bottom:8px;font-size:.93rem}
-.note.warn{background:var(--warn-soft);color:#6E1510}
-.note.amber{background:var(--amber-soft);color:#5C4400}
-.note.ok{background:var(--ok-soft);color:#0F3F2B}
-.note b{font-weight:600}
+.setup{background:linear-gradient(150deg,rgba(111,191,122,.22),rgba(111,191,122,.06))}
+.setup p{margin:4px 0 12px;color:var(--muted)}
+.note{border-radius:var(--r-md);padding:11px 13px;margin-bottom:8px;font-size:.93rem;border:1px solid;-webkit-backdrop-filter:var(--blur);backdrop-filter:var(--blur)}
+.note.warn{background:var(--warn-bg);border-color:var(--warn-line);color:#FFD2CD}
+.note.amber{background:var(--amber-bg);border-color:var(--amber-line);color:#F8E6BC}
+.note.ok{background:var(--ok-bg);border-color:var(--ok-line);color:#D3F1D8}
+.note b{font-weight:600;color:#fff}
 
-/* sugar row */
 .bg-row{display:flex;align-items:center;gap:12px}
 .bg-row label{flex:1}
 .bg-row input{width:110px;flex:0 0 auto;text-align:right;font-size:1.3rem;font-weight:600}
 
-/* inputs */
-input[type=number],input[type=text],input[type=search],select{border:1.5px solid var(--line);border-radius:var(--r-sm);padding:10px 12px;background:#fff;width:100%}
-input:focus,select:focus{border-color:var(--ink);outline:none}
+input[type=number],input[type=text],input[type=search],select{border:1px solid var(--glass-line);border-radius:var(--r-sm);padding:11px 13px;background:rgba(0,0,0,.25);width:100%;color:var(--text)}
+input::placeholder{color:#6F8474}
+input:focus,select:focus{border-color:var(--green);outline:none;box-shadow:0 0 0 3px rgba(111,191,122,.18)}
+select option{background:#16221A}
 
-/* plate */
 .plate-list{list-style:none;margin:0;padding:0}
 .plate-list li{display:flex;align-items:center;gap:10px;padding:10px 0;border-top:1px solid var(--line)}
 .plate-list li:first-child{border-top:0}
 .plate-list .what{flex:1;min-width:0;background:none;border:0;text-align:left;padding:0}
 .plate-list .what span{display:block}
-.plate-list .g{font-weight:600;font-variant-numeric:tabular-nums}
-.x{border:0;background:var(--bg);width:32px;height:32px;border-radius:50%;font-size:1.1rem;line-height:1;color:var(--muted)}
+.plate-list .g{font-weight:600;font-variant-numeric:tabular-nums;color:var(--green-2)}
+.x{border:0;background:rgba(255,255,255,.07);width:32px;height:32px;border-radius:50%;font-size:1.1rem;line-height:1;color:var(--muted);flex:0 0 auto}
 .empty{color:var(--muted);margin:2px 0 0}
 .quick{display:flex;flex-wrap:wrap;gap:6px;margin-top:12px}
-.quick .chip{font-size:.88rem;padding:6px 11px}
+.quick .chip{font-size:.86rem;padding:6px 11px}
 
-/* search */
 .search{position:relative}
-.search input{padding-left:40px;font-size:1.05rem}
+.search input{padding-left:40px;font-size:1.05rem;border-radius:var(--r-md)}
 .search svg{position:absolute;left:13px;top:50%;transform:translateY(-50%);color:var(--muted)}
-.cats{display:flex;gap:6px;overflow-x:auto;margin:10px -16px 4px;padding:0 16px 2px;scrollbar-width:none}
+.cats{display:flex;gap:6px;overflow-x:auto;margin:12px -16px 6px;padding:0 16px 2px;scrollbar-width:none}
 .cats::-webkit-scrollbar{display:none}
-.results{list-style:none;margin:6px 0 0;padding:0}
-.results li button{width:100%;display:flex;justify-content:space-between;align-items:center;gap:10px;background:none;border:0;border-top:1px solid var(--line);padding:12px 2px;text-align:left}
-.results li:first-child button{border-top:0}
+.results{list-style:none;margin:8px 0 0;padding:0;display:grid;gap:8px}
+.results li button{width:100%;display:flex;justify-content:space-between;align-items:center;gap:10px;background:rgba(255,255,255,.035);border:1px solid var(--line);border-radius:var(--r-md);padding:12px 14px;text-align:left}
+.results li button:active{background:rgba(111,191,122,.12)}
 .results .meta{color:var(--muted);font-size:.85rem;white-space:nowrap}
-.link{background:none;border:0;color:var(--pink);padding:8px 0;font-weight:600}
+.results .plus{color:var(--green);font-size:1.3rem;line-height:1;margin-left:4px}
+.link{background:none;border:0;color:var(--green-2);padding:8px 0;font-weight:600}
 
-/* pen bar (the dose) */
-.pen{position:fixed;left:0;right:0;bottom:calc(env(safe-area-inset-bottom,0px) + 62px);padding:0 12px;z-index:20;pointer-events:none}
-.pen-inner{pointer-events:auto;max-width:536px;margin:0 auto;background:var(--ink);color:#fff;border-radius:22px;display:flex;align-items:stretch;gap:10px;padding:10px 10px 10px 16px;box-shadow:0 10px 30px rgba(30,35,64,.35)}
+/* dose bar */
+.pen{position:fixed;left:0;right:0;bottom:calc(env(safe-area-inset-bottom,0px) + 70px);padding:0 12px;z-index:20;pointer-events:none}
+.pen-inner{pointer-events:auto;max-width:536px;margin:0 auto;background:rgba(18,32,22,.72);border:1px solid rgba(143,212,154,.28);-webkit-backdrop-filter:blur(22px) saturate(160%);backdrop-filter:blur(22px) saturate(160%);border-radius:22px;display:flex;align-items:stretch;gap:10px;padding:10px 10px 10px 16px;box-shadow:0 14px 40px rgba(0,0,0,.45)}
 .pen-carbs{flex:1;display:flex;flex-direction:column;justify-content:center;min-width:0}
 .pen-carbs b{font-size:1.5rem;font-weight:800;font-variant-numeric:tabular-nums;line-height:1.1}
-.pen-carbs span{font-size:.82rem;color:#B9BEDB;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.window{background:linear-gradient(180deg,#2A3058,#151935);border:2px solid #434A7A;border-radius:14px;min-width:112px;padding:4px 12px;display:flex;align-items:baseline;justify-content:center;gap:6px}
-.window b{font-size:2.3rem;font-weight:800;color:var(--saffron);font-variant-numeric:tabular-nums;line-height:1.15;letter-spacing:-.02em}
+.pen-carbs span{font-size:.82rem;color:var(--muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.window{background:linear-gradient(180deg,rgba(0,0,0,.45),rgba(0,0,0,.25));border:1px solid rgba(244,196,48,.35);border-radius:14px;min-width:112px;padding:4px 12px;display:flex;align-items:baseline;justify-content:center;gap:6px}
+.window b{font-size:2.3rem;font-weight:800;color:var(--saffron);font-variant-numeric:tabular-nums;line-height:1.15;letter-spacing:-.02em;text-shadow:0 0 18px rgba(244,196,48,.35)}
 .window span{color:#E9D8A0;font-size:.85rem}
-.window.na b{color:#7E84A8;font-size:1.6rem}
-.save{border:0;border-radius:14px;background:var(--pink);color:#fff;font-weight:600;padding:0 16px}
-.save:disabled{background:#4A5080;color:#9AA0C6}
+.window.na{border-color:var(--glass-line)}
+.window.na b{color:#5F7465;font-size:1.6rem;text-shadow:none}
+.save{border:0;border-radius:14px;background:var(--green);color:var(--on-green);font-weight:700;padding:0 16px}
+.save:disabled{background:rgba(255,255,255,.08);color:#5F7465}
 .window.bump{animation:bump .35s ease}
 @keyframes bump{50%{transform:scale(1.07)}}
 @media (prefers-reduced-motion:reduce){.window.bump{animation:none}.sheet{transition:none!important}}
 
 /* tabs */
-.tabs{position:fixed;left:0;right:0;bottom:0;background:var(--card);border-top:1px solid var(--line);display:flex;justify-content:center;padding-bottom:env(safe-area-inset-bottom,0px);z-index:21}
-.tabs button{flex:1;max-width:186px;border:0;background:none;padding:10px 0 12px;color:var(--muted);font-size:.85rem;display:flex;flex-direction:column;align-items:center;gap:2px}
-.tabs button[aria-selected="true"]{color:var(--ink);font-weight:600}
+.tabs{position:fixed;left:0;right:0;bottom:0;background:rgba(14,22,16,.70);border-top:1px solid var(--glass-line);-webkit-backdrop-filter:blur(20px) saturate(150%);backdrop-filter:blur(20px) saturate(150%);display:flex;justify-content:center;padding-bottom:env(safe-area-inset-bottom,0px);z-index:21}
+.tabs button{flex:1;max-width:140px;border:0;background:none;padding:10px 0 12px;color:var(--muted);font-size:.8rem;display:flex;flex-direction:column;align-items:center;gap:3px}
+.tabs button[aria-selected="true"]{color:var(--green-2);font-weight:600}
+.tabs button[aria-selected="true"] svg{filter:drop-shadow(0 0 6px rgba(111,191,122,.6))}
 .tabs svg{width:22px;height:22px}
 
 /* sheets */
-.scrim{position:fixed;inset:0;background:rgba(20,23,45,.45);z-index:30;opacity:0;pointer-events:none;transition:opacity .2s}
+.scrim{position:fixed;inset:0;background:rgba(0,8,3,.55);z-index:30;opacity:0;pointer-events:none;transition:opacity .2s}
 .scrim.open{opacity:1;pointer-events:auto}
-.sheet{position:fixed;left:0;right:0;bottom:0;z-index:31;max-width:560px;margin:0 auto;background:var(--card);border-radius:24px 24px 0 0;padding:18px 18px calc(env(safe-area-inset-bottom,0px) + 18px);transform:translateY(105%);transition:transform .25s ease;max-height:88vh;overflow-y:auto}
-.sheet.open{transform:none}
-.sheet h3{margin:0 0 4px;font-size:1.3rem;font-weight:800;letter-spacing:-.01em}
-.seg{display:flex;background:var(--bg);border-radius:12px;padding:4px;margin:14px 0 4px}
+.sheet{position:fixed;left:0;right:0;bottom:0;z-index:31;max-width:560px;margin:0 auto;background:rgba(20,34,24,.82);border:1px solid var(--glass-line);border-bottom:0;-webkit-backdrop-filter:blur(26px) saturate(150%);backdrop-filter:blur(26px) saturate(150%);border-radius:24px 24px 0 0;padding:18px 18px calc(env(safe-area-inset-bottom,0px) + 18px);transform:translateY(105%);transition:transform .25s ease;max-height:88vh;overflow-y:auto;visibility:hidden}
+.sheet.open{transform:none;visibility:visible}
+.sheet h3{margin:0 0 4px;font-size:1.3rem;font-weight:800}
+.seg{display:flex;background:rgba(0,0,0,.28);border-radius:12px;padding:4px;margin:14px 0 4px}
 .seg button{flex:1;border:0;background:none;border-radius:9px;padding:9px 6px;font-weight:600;color:var(--muted)}
-.seg button[aria-pressed="true"]{background:#fff;color:var(--ink);box-shadow:0 1px 3px rgba(30,35,64,.15)}
+.seg button[aria-pressed="true"]{background:var(--green);color:var(--on-green)}
 .sizes{display:flex;flex-wrap:wrap;gap:6px;margin:12px 0}
 .qty{display:flex;align-items:center;gap:14px;margin:10px 0}
-.qty button{width:44px;height:44px;border-radius:50%;border:1.5px solid var(--line);background:#fff;font-size:1.4rem;line-height:1}
+.qty button{width:44px;height:44px;border-radius:50%;border:1px solid var(--glass-line);background:var(--glass-2);font-size:1.4rem;line-height:1}
 .qty output{font-size:1.5rem;font-weight:800;min-width:48px;text-align:center;font-variant-numeric:tabular-nums}
-.big{font-size:2.4rem;font-weight:800;letter-spacing:-.02em;font-variant-numeric:tabular-nums;margin:6px 0 0}
+.big{font-size:2.4rem;font-weight:800;letter-spacing:-.02em;font-variant-numeric:tabular-nums;margin:6px 0 0;color:var(--green-2)}
 .row{display:flex;gap:10px;align-items:center}
 .row > *{flex:1}
 .field{display:block;margin:10px 0}
-.field > span{display:block;font-size:.9rem;color:var(--muted);margin-bottom:4px}
-.btn{display:block;width:100%;border:0;border-radius:14px;padding:14px;font-weight:600;font-size:1.05rem;background:var(--ink);color:#fff;margin-top:14px}
-.btn.pink{background:var(--pink)}
-.btn.ghost{background:var(--bg);color:var(--ink)}
-.btn.danger{background:var(--warn-soft);color:var(--warn)}
+.field > span{display:block;font-size:.9rem;color:var(--muted);margin-bottom:5px}
+.btn{display:block;width:100%;border:0;border-radius:14px;padding:14px;font-weight:700;font-size:1.05rem;background:var(--glass-2);color:var(--text);margin-top:14px;border:1px solid var(--glass-line)}
+.btn.pink,.btn.go{background:var(--green);color:var(--on-green);border-color:var(--green)}
+.btn.ghost{background:var(--glass-2)}
+.btn.danger{background:var(--warn-bg);color:var(--warn);border-color:var(--warn-line)}
 .breakdown{font-variant-numeric:tabular-nums;margin:8px 0;padding:0;list-style:none}
-.breakdown li{display:flex;justify-content:space-between;padding:6px 0;border-top:1px dashed var(--line)}
+.breakdown li{display:flex;justify-content:space-between;padding:7px 0;border-top:1px dashed var(--line)}
 .breakdown li:first-child{border-top:0}
-.breakdown li.total{font-weight:800;border-top:1.5px solid var(--ink)}
+.breakdown li.total{font-weight:800;border-top:1px solid var(--green);color:var(--green-2)}
 
-/* log */
 .day h2{display:flex;justify-content:space-between}
-.entry{border-top:1px solid var(--line);padding:10px 0;display:flex;gap:12px}
+.entry{border-top:1px solid var(--line);padding:10px 0;display:flex;gap:12px;align-items:center}
 .entry:first-of-type{border-top:0}
 .entry .t{width:54px;color:var(--muted);font-size:.9rem;font-variant-numeric:tabular-nums}
 .entry .body{flex:1;min-width:0}
-.entry .u{font-weight:800;color:var(--pink);white-space:nowrap}
+.entry .u{font-weight:800;color:var(--saffron);white-space:nowrap}
 .entry .items{color:var(--muted);font-size:.86rem}
 
-/* settings */
+/* user */
+.profile{display:flex;align-items:center;gap:14px}
+.profile input{font-size:1.25rem;font-weight:600}
+.ratio-hero{display:flex;align-items:baseline;gap:10px;margin:2px 0 6px}
+.ratio-hero b{white-space:nowrap;font-size:2.6rem;font-weight:800;color:var(--green-2);letter-spacing:-.02em;font-variant-numeric:tabular-nums;line-height:1}
+.ratio-hero span{color:var(--muted);flex:1;font-size:.92rem}
+
 .switch{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:6px 0}
-.switch input{width:22px;height:22px;accent-color:var(--pink)}
+.switch input{width:22px;height:22px;accent-color:var(--green)}
 .grid4{display:grid;grid-template-columns:1fr 1fr;gap:8px}
 .mine li{display:flex;justify-content:space-between;align-items:center;padding:8px 0;border-top:1px solid var(--line)}
 .mine{list-style:none;margin:0;padding:0}
 .hide{display:none!important}
-.toast{position:fixed;left:50%;top:calc(env(safe-area-inset-top,0px) + 14px);transform:translate(-50%,-150%);background:var(--ok);color:#fff;padding:10px 16px;border-radius:12px;z-index:40;transition:transform .25s;font-weight:600}
+.toast{position:fixed;left:50%;top:calc(env(safe-area-inset-top,0px) + 14px);transform:translate(-50%,-160%);background:var(--green);color:var(--on-green);padding:10px 16px;border-radius:12px;z-index:40;transition:transform .25s;font-weight:700;white-space:nowrap;max-width:90vw;overflow:hidden;text-overflow:ellipsis}
 .toast.show{transform:translate(-50%,0)}
+@supports not ((backdrop-filter:blur(1px)) or (-webkit-backdrop-filter:blur(1px))){
+  .card,.sheet,.tabs,.pen-inner{background:#17251B}
+}
 </style>
 </head>
 <body>
@@ -161,17 +186,18 @@ input:focus,select:focus{border-color:var(--ink);outline:none}
   <!-- ============ CALCULATE ============ -->
   <section id="view-calc">
     <header class="top">
-      <h1 class="brand">Khurak<small>ਖੁਰਾਕ</small></h1>
-      <span class="muted small" id="ratioLabel"></span>
+      <h1 class="brand">T1D<span>TMD</span></h1>
+      <button class="who" id="whoChip" data-view="user"><span class="avatar" id="whoAvatar">?</span><span><b id="whoName">You</b> <span id="ratioLabel"></span></span></button>
     </header>
     <div class="meals" role="group" aria-label="Meal" id="meals"></div>
 
     <div class="card setup hide" id="setupCard">
-      <h2>First, your carb ratio</h2>
+      <h2>Welcome! Two quick things</h2>
       <p>The ratio your doctor gave you: 1 unit of insulin covers how many grams of carbs? For example 10 means 1 unit for every 10 g.</p>
+      <input type="text" id="setupName" placeholder="Your name (optional)" style="margin-bottom:8px" maxlength="40">
       <div class="row">
         <input type="number" inputmode="decimal" id="setupIcr" placeholder="e.g. 10" aria-label="Grams of carbs per 1 unit">
-        <button class="btn pink" style="margin:0;flex:0 0 auto;width:auto;padding:12px 20px" id="setupSave">Save</button>
+        <button class="btn go" style="margin:0;flex:0 0 auto;width:auto;padding:12px 20px" id="setupSave">Save</button>
       </div>
     </div>
 
@@ -220,12 +246,18 @@ input:focus,select:focus{border-color:var(--ink);outline:none}
     </div>
   </section>
 
-  <!-- ============ SETTINGS ============ -->
-  <section id="view-set" class="hide">
-    <header class="top"><h1 class="brand">Settings</h1></header>
-
+  <!-- ============ USER ============ -->
+  <section id="view-user" class="hide">
+    <header class="top"><h1 class="brand">User</h1></header>
     <div class="card">
-      <h2>Carb ratio (ICR)</h2>
+      <div class="profile">
+        <span class="avatar lg" id="userAvatar">?</span>
+        <label class="field" style="flex:1;margin:0"><span>Name</span><input type="text" id="userName" placeholder="Your name" autocomplete="name" maxlength="40"></label>
+      </div>
+    </div>
+    <div class="card">
+      <h2>My carb ratio</h2>
+      <div class="ratio-hero"><b id="ratioBig">–</b><span id="ratioBigSub">set below</span></div>
       <p class="muted small" style="margin-top:0">Grams of carbs covered by 1 unit of rapid / regular insulin.</p>
       <div class="switch"><label for="perMeal">Different ratio for each meal</label><input type="checkbox" id="perMeal"></div>
       <label class="field" id="icrOneWrap"><span>1 unit for every … g carbs</span><input type="number" inputmode="decimal" id="icrOne" placeholder="e.g. 10"></label>
@@ -241,7 +273,7 @@ input:focus,select:focus{border-color:var(--ink);outline:none}
     </div>
 
     <div class="card">
-      <h2>Correction for high sugar</h2>
+      <h2>My correction</h2>
       <div class="switch"><label for="corrOn">Add a correction when I enter my sugar</label><input type="checkbox" id="corrOn"></div>
       <div id="corrWrap" class="hide">
         <label class="field"><span>Sugar units</span>
@@ -254,6 +286,13 @@ input:focus,select:focus{border-color:var(--ink);outline:none}
         <p class="muted small">Ask your diabetes team for these two numbers. The second one is called the correction factor or ISF.</p>
       </div>
     </div>
+
+    <p class="muted small" style="padding:0 4px">Use the numbers your diabetes team gave you. Change them only with their advice.</p>
+  </section>
+
+  <!-- ============ SETTINGS ============ -->
+  <section id="view-set" class="hide">
+    <header class="top"><h1 class="brand">Settings</h1></header>
 
     <div class="card">
       <h2>Safety checks</h2>
@@ -269,7 +308,7 @@ input:focus,select:focus{border-color:var(--ink);outline:none}
 
     <div class="card">
       <h2>About these numbers</h2>
-      <p class="small muted" style="margin:0">Carb values come from the ISPAD Indian foods carb counting booklet, the "Quick Guide to Carbohydrate Counting" by Sheryl Salis, and standard food tables. They are estimates: dhaba sizes, oil and sugar vary a lot. Khurak only does the maths with the ratio you enter; it does not replace advice from your doctor or diabetes educator. Check your sugar regularly, and if the suggested number ever looks wrong to you, trust your own judgement and your team.</p>
+      <p class="small muted" style="margin:0">Carb values come from the ISPAD Indian foods carb counting booklet, the "Quick Guide to Carbohydrate Counting" by Sheryl Salis, and standard food tables. They are estimates: dhaba sizes, oil and sugar vary a lot. T1DTMD only does the maths with the ratio you enter; it does not replace advice from your doctor or diabetes educator. Check your sugar regularly, and if the suggested number ever looks wrong to you, trust your own judgement and your team.</p>
     </div>
   </section>
 </div>
@@ -286,6 +325,7 @@ input:focus,select:focus{border-color:var(--ink);outline:none}
 <nav class="tabs" role="tablist">
   <button role="tab" aria-selected="true" data-view="calc"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="8.5"/><circle cx="12" cy="12" r="4"/></svg>Calculate</button>
   <button role="tab" aria-selected="false" data-view="log"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 4h14v16H5z"/><path d="M9 9h6M9 13h6M9 17h3"/></svg>Log</button>
+  <button role="tab" aria-selected="false" data-view="user"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="8" r="4"/><path d="M4 21c1.5-4 4.5-6 8-6s6.5 2 8 6"/></svg>User</button>
   <button role="tab" aria-selected="false" data-view="set"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 7h10M18 7h2M4 17h4M12 17h8"/><circle cx="16" cy="7" r="2"/><circle cx="10" cy="17" r="2"/></svg>Settings</button>
 </nav>
 
@@ -293,7 +333,722 @@ input:focus,select:focus{border-color:var(--ink);outline:none}
 <div class="sheet" id="sheet" role="dialog" aria-modal="true"></div>
 <div class="toast" id="toast"></div>
 
-<script src="foods.js"></script>
-<script src="app.js"></script>
+<script>
+/* ===================== FOOD LIST (edit carbs here) ===================== */
+/*
+  KHURAK food list — grams of CARBOHYDRATE per portion.
+
+  Each row:  [id, name, other names (for search), category, unit, home, outside, rich]
+
+  unit     how the portion is measured (sizes are in UNITS below)
+  home     carbs for ONE medium portion made at home       (null = not usually made at home)
+  outside  carbs for ONE medium portion from dhaba/shop     (null = only home version)
+  rich     1 = oily / buttery / creamy (sugar may rise again 3–5 h later)
+
+  Sources: ISPAD / Life for a Child "Carbohydrate counting – Indian foods" (2021),
+  "Nutrition Basics and a Quick Guide to Carbohydrate Counting" (S. Salis, 2018),
+  and IFCT/USDA values for items not in those books. A "katori" here = 200 ml bowl.
+  These are estimates. Weigh your own portions once in a while and fix numbers here
+  or with "Add my own food" in the app.
+*/
+
+const UNITS = {
+  pc:    { label: "piece", sizes: [["Small", 0.7], ["Medium", 1], ["Large", 1.4]] },
+  bowl:  { label: "katori", sizes: [["Small katori (150 ml)", 0.75], ["Katori (200 ml)", 1], ["Big bowl (300 ml)", 1.5]] },
+  glass: { label: "glass", sizes: [["Small (150 ml)", 0.6], ["Glass (250 ml)", 1], ["Big (350 ml)", 1.4]] },
+  cup:   { label: "cup", sizes: [["Small cup", 0.7], ["Cup", 1], ["Mug", 1.5]] },
+  plate: { label: "plate", sizes: [["Half / small", 0.6], ["Regular", 1], ["Large", 1.4]] },
+  fix:   { label: "", sizes: null }
+};
+
+const CATS = [
+  ["bread", "Roti & paratha"],
+  ["rice", "Rice"],
+  ["dal", "Dal & sabzi"],
+  ["meat", "Chicken, egg & meat"],
+  ["nashta", "Nashta"],
+  ["street", "Street & fast food"],
+  ["south", "South Indian"],
+  ["drink", "Milk & drinks"],
+  ["sweet", "Mithai & sweets"],
+  ["fruit", "Fruits & nuts"],
+  ["extra", "Extras"]
+];
+
+const FOODS = [
+  // ---------- Roti & paratha ----------
+  ["roti", "Roti / phulka", "chapati chapatti fulka", "bread", "pc", 15, null, 0],
+  ["roti_ghee", "Roti with ghee", "chapati chopri", "bread", "pc", 15, null, 1],
+  ["tandoori_roti", "Tandoori roti", "tandoor", "bread", "pc", null, 33, 0],
+  ["rumali", "Rumali roti", "roomali", "bread", "pc", null, 25, 0],
+  ["missi", "Missi roti", "besan roti", "bread", "pc", 20, 28, 0],
+  ["makki", "Makki di roti", "makki ki roti corn", "bread", "pc", 20, 28, 1],
+  ["bajra", "Bajra roti", "millet bhakri", "bread", "pc", 20, null, 0],
+  ["jowar", "Jowar roti", "millet bhakri", "bread", "pc", 18, null, 0],
+  ["par_plain", "Plain paratha", "parantha parontha tikona", "bread", "pc", 22, 32, 1],
+  ["par_aloo", "Aloo paratha", "parantha potato", "bread", "pc", 30, 45, 1],
+  ["par_gobi", "Gobi paratha", "parantha cauliflower", "bread", "pc", 26, 38, 1],
+  ["par_mooli", "Mooli paratha", "parantha radish", "bread", "pc", 24, 36, 1],
+  ["par_methi", "Methi paratha", "parantha fenugreek", "bread", "pc", 22, 32, 1],
+  ["par_paneer", "Paneer paratha", "parantha", "bread", "pc", 22, 34, 1],
+  ["par_pyaz", "Pyaz paratha", "parantha onion", "bread", "pc", 25, 36, 1],
+  ["par_mix", "Mix veg paratha", "parantha", "bread", "pc", 24, 35, 1],
+  ["par_dal", "Dal / sattu paratha", "parantha", "bread", "pc", 20, 30, 1],
+  ["par_lachha", "Lachha paratha", "parantha laccha", "bread", "pc", 28, 38, 1],
+  ["naan", "Naan (plain)", "nan", "bread", "pc", null, 47, 0],
+  ["naan_butter", "Butter naan", "nan", "bread", "pc", null, 48, 1],
+  ["naan_garlic", "Garlic naan", "nan", "bread", "pc", null, 50, 1],
+  ["kulcha", "Kulcha (plain)", "kulche", "bread", "pc", null, 33, 0],
+  ["kulcha_amr", "Amritsari kulcha (stuffed)", "kulche aloo", "bread", "pc", null, 55, 1],
+  ["bhatura", "Bhatura", "bhature", "bread", "pc", 30, 40, 1],
+  ["puri", "Puri", "poori", "bread", "pc", 8, 10, 1],
+  ["bread_white", "Bread slice (white)", "double roti toast", "bread", "fix", 15, null, 0],
+  ["bread_brown", "Bread slice (brown / atta)", "toast", "bread", "fix", 13, null, 0],
+  ["pav", "Pav / bun", "pao", "bread", "fix", 15, null, 0],
+
+  // ---------- Rice ----------
+  ["rice", "Plain rice", "chawal bhaat", "rice", "bowl", 30, 40, 0],
+  ["jeera_rice", "Jeera rice", "chawal", "rice", "bowl", 32, 42, 1],
+  ["pulao", "Veg pulao", "pulav chawal", "rice", "bowl", 30, 40, 1],
+  ["biryani_veg", "Veg biryani", "chawal", "rice", "bowl", 35, 50, 1],
+  ["biryani_ch", "Chicken / mutton biryani", "chawal", "rice", "bowl", 33, 50, 1],
+  ["khichdi", "Khichdi", "khichri", "rice", "bowl", 35, null, 0],
+  ["curd_rice", "Curd rice", "dahi chawal", "rice", "bowl", 30, null, 0],
+  ["fried_rice", "Fried rice", "chinese", "rice", "bowl", null, 45, 1],
+
+  // ---------- Dal & sabzi ----------
+  ["dal", "Dal (arhar / moong / masoor)", "daal tadka yellow", "dal", "bowl", 25, 28, 0],
+  ["dal_makhani", "Dal makhani / maah di dal", "kaali dal urad", "dal", "bowl", 30, 35, 1],
+  ["rajma", "Rajma", "rajmah kidney beans", "dal", "bowl", 30, 35, 0],
+  ["chole", "Chole / chana masala", "chhole chickpeas", "dal", "bowl", 30, 35, 0],
+  ["kala_chana", "Kala chana", "black chana", "dal", "bowl", 28, null, 0],
+  ["kadhi", "Kadhi pakora", "karhi", "dal", "bowl", 18, 22, 1],
+  ["saag", "Sarson da saag", "saag sarso", "dal", "bowl", 8, 10, 1],
+  ["palak_paneer", "Palak paneer", "", "dal", "bowl", 8, 10, 1],
+  ["shahi_paneer", "Shahi paneer / paneer butter masala", "makhani", "dal", "bowl", 10, 16, 1],
+  ["kadhai_paneer", "Kadhai paneer", "karahi", "dal", "bowl", 8, 10, 1],
+  ["matar_paneer", "Matar paneer", "mutter", "dal", "bowl", 15, 18, 1],
+  ["aloo_gobi", "Aloo gobi", "gobhi", "dal", "bowl", 15, 18, 0],
+  ["aloo_matar", "Aloo matar", "mutter", "dal", "bowl", 20, 22, 0],
+  ["aloo_sabzi", "Aloo sabzi (potato)", "aloo bhaji", "dal", "bowl", 28, 30, 0],
+  ["dum_aloo", "Dum aloo", "", "dal", "bowl", 18, 22, 1],
+  ["bhindi", "Bhindi", "okra ladyfinger", "dal", "bowl", 6, 8, 0],
+  ["baingan", "Baingan bharta", "bartha brinjal", "dal", "bowl", 6, 8, 0],
+  ["mix_veg", "Mix veg", "sabzi", "dal", "bowl", 10, 12, 0],
+  ["lauki", "Lauki / tinda / tori", "ghiya", "dal", "bowl", 6, null, 0],
+  ["band_gobhi", "Band gobhi / cabbage", "patta gobi", "dal", "bowl", 8, null, 0],
+  ["soya_chaap", "Soya chaap (gravy / tikka)", "chap", "dal", "plate", 12, 15, 1],
+  ["raita", "Boondi raita", "", "dal", "bowl", 12, 12, 0],
+  ["raita_veg", "Veg raita (kheera / onion)", "", "dal", "bowl", 8, 8, 0],
+  ["dahi", "Dahi (plain curd)", "curd yogurt", "dal", "bowl", 8, null, 0],
+  ["salad", "Salad (kheera, pyaz, tamatar)", "", "dal", "plate", 5, 5, 0],
+
+  // ---------- Chicken, egg & meat ----------
+  ["butter_chicken", "Butter chicken", "makhani murgh", "meat", "bowl", 6, 12, 1],
+  ["chicken_curry", "Chicken curry", "murgh", "meat", "bowl", 5, 6, 1],
+  ["mutton_curry", "Mutton / meat curry", "rogan josh", "meat", "bowl", 5, 6, 1],
+  ["keema", "Keema", "kheema mince", "meat", "bowl", 5, 6, 1],
+  ["keema_matar", "Keema matar", "", "meat", "bowl", 10, 12, 1],
+  ["egg_curry", "Egg curry", "anda curry", "meat", "bowl", 6, 8, 1],
+  ["fish_curry", "Fish curry", "machhi", "meat", "bowl", 5, 6, 0],
+  ["fish_fry", "Amritsari fish fry (plate)", "machhi", "meat", "plate", null, 15, 1],
+  ["tandoori", "Tandoori chicken (quarter)", "", "meat", "plate", 4, 5, 0],
+  ["tikka", "Chicken tikka (6 pcs)", "", "meat", "plate", 5, 6, 0],
+  ["seekh", "Seekh kebab (2 pcs)", "kabab", "meat", "plate", 5, 6, 1],
+  ["paneer_tikka", "Paneer tikka (6 pcs)", "", "meat", "plate", 6, 8, 1],
+  ["egg_boiled", "Egg (boiled)", "anda", "meat", "fix", 0.5, null, 0],
+  ["omelette", "Omelette (2 eggs)", "anda", "meat", "fix", 2, null, 1],
+  ["bread_omelette", "Bread omelette", "anda", "meat", "plate", null, 30, 1],
+
+  // ---------- Nashta ----------
+  ["poha", "Poha", "pohe", "nashta", "bowl", 30, 35, 0],
+  ["upma", "Upma", "suji", "nashta", "bowl", 30, null, 0],
+  ["daliya", "Daliya (namkeen)", "dalia broken wheat", "nashta", "bowl", 25, null, 0],
+  ["daliya_sweet", "Daliya (sweet, with milk)", "dalia", "nashta", "bowl", 40, null, 0],
+  ["oats", "Oats with milk", "porridge", "nashta", "bowl", 30, null, 0],
+  ["cornflakes", "Cornflakes with milk", "cereal", "nashta", "bowl", 35, null, 0],
+  ["chilla", "Besan / moong chilla", "cheela pudla", "nashta", "pc", 12, null, 0],
+  ["sandwich", "Veg sandwich", "", "nashta", "pc", 22, 30, 0],
+  ["sandwich_grill", "Grilled aloo sandwich", "", "nashta", "pc", 30, 35, 1],
+  ["sprouts", "Sprouts chaat", "moong", "nashta", "bowl", 25, null, 0],
+
+  // ---------- Street & fast food ----------
+  ["samosa", "Samosa", "", "street", "pc", 30, 32, 1],
+  ["pakora", "Pakore (4–5 pcs)", "pakoda bhajia", "street", "plate", 15, 20, 1],
+  ["bread_pakora", "Bread pakora", "", "street", "pc", 24, 26, 1],
+  ["aloo_tikki", "Aloo tikki", "", "street", "pc", 15, 18, 1],
+  ["tikki_chaat", "Tikki chaat (plate)", "", "street", "plate", null, 45, 1],
+  ["golgappe", "Golgappe (6 pcs)", "pani puri gol gappa", "street", "plate", null, 31, 0],
+  ["dahi_bhalla", "Dahi bhalla (1 pc)", "dahi vada", "street", "pc", 22, 22, 0],
+  ["papdi_chaat", "Papdi chaat (plate)", "", "street", "plate", null, 40, 1],
+  ["chole_kulche", "Chole kulche (plate)", "kulche", "street", "plate", null, 65, 1],
+  ["chole_bhature", "Chole bhature (plate of 2)", "chhole", "street", "plate", null, 100, 1],
+  ["pav_bhaji", "Pav bhaji (bhaji + 2 pav)", "", "street", "plate", 55, 60, 1],
+  ["momos", "Momos, steamed (6 pcs)", "momo", "street", "plate", 45, 45, 0],
+  ["momos_fried", "Momos, fried (6 pcs)", "momo", "street", "plate", null, 50, 1],
+  ["spring_roll", "Spring roll", "", "street", "pc", null, 15, 1],
+  ["chowmein", "Chowmein / noodles (plate)", "hakka noodles", "street", "plate", 40, 60, 1],
+  ["manchurian", "Manchurian (gravy)", "", "street", "bowl", null, 20, 1],
+  ["maggi", "Maggi (1 packet)", "noodles", "street", "fix", 44, null, 1],
+  ["pizza", "Pizza slice (medium pizza)", "", "street", "pc", null, 25, 1],
+  ["burger", "Burger (veg / aloo tikki)", "", "street", "pc", null, 45, 1],
+  ["burger_ch", "Burger (chicken)", "", "street", "pc", null, 40, 1],
+  ["fries", "French fries", "chips", "street", "plate", null, 45, 1],
+  ["pasta", "Pasta (white / red sauce)", "", "street", "bowl", 35, 40, 1],
+  ["roll", "Kathi roll / frankie", "wrap", "street", "pc", null, 35, 1],
+
+  // ---------- South Indian ----------
+  ["dosa", "Plain dosa", "dosai", "south", "pc", 15, 30, 0],
+  ["masala_dosa", "Masala dosa (with aloo)", "", "south", "pc", 30, 45, 1],
+  ["idli", "Idli", "", "south", "pc", 7.5, 15, 0],
+  ["medu_vada", "Medu vada", "vada", "south", "pc", 7, 15, 1],
+  ["uttapam", "Uttapam", "", "south", "pc", 30, 45, 0],
+  ["sambhar", "Sambhar", "sambar", "south", "bowl", 15, 30, 0],
+  ["coconut_chutney", "Coconut chutney", "", "south", "bowl", 5, 5, 1],
+
+  // ---------- Milk & drinks ----------
+  ["milk", "Milk (cow / toned)", "doodh", "drink", "glass", 12, null, 0],
+  ["milk_buff", "Milk (buffalo / full cream)", "doodh majh", "drink", "glass", 13, null, 1],
+  ["haldi_milk", "Haldi doodh (no sugar)", "turmeric milk", "drink", "glass", 12, null, 0],
+  ["chai", "Chai, no sugar", "tea", "drink", "cup", 3, null, 0],
+  ["chai_sugar", "Chai with 1 tsp sugar", "tea", "drink", "cup", 8, 10, 0],
+  ["coffee", "Coffee with milk, no sugar", "", "drink", "cup", 5, null, 0],
+  ["lassi_sweet", "Lassi (sweet)", "", "drink", "glass", 35, 45, 1],
+  ["lassi_salt", "Lassi (namkeen)", "", "drink", "glass", 12, 12, 0],
+  ["chaas", "Chaas / buttermilk", "lassi patli", "drink", "glass", 5, 5, 0],
+  ["shake", "Banana / mango shake", "milkshake", "drink", "glass", 40, 55, 0],
+  ["juice_pack", "Juice (packaged)", "real frooti", "drink", "glass", 26, null, 0],
+  ["juice_fresh", "Fresh orange / mosambi juice", "", "drink", "glass", 22, 22, 0],
+  ["cola", "Cold drink (cola etc.)", "soft drink coke pepsi", "drink", "glass", 27, null, 0],
+  ["cola_diet", "Diet / zero cold drink", "coke zero", "drink", "glass", 0, null, 0],
+  ["ganne", "Ganne da juice", "sugarcane", "drink", "glass", null, 40, 0],
+  ["shikanji", "Nimbu pani / shikanji (sweet)", "lemonade", "drink", "glass", 20, 25, 0],
+  ["paneer", "Paneer (100 g)", "cottage cheese", "drink", "fix", 3, null, 1],
+
+  // ---------- Sweets ----------
+  ["gulab_jamun", "Gulab jamun (with syrup)", "", "sweet", "pc", 30, 30, 1],
+  ["rasgulla", "Rasgulla (with syrup)", "rosogulla", "sweet", "pc", 25, 25, 0],
+  ["rasgulla_sq", "Rasgulla (syrup squeezed out)", "", "sweet", "pc", 15, 15, 0],
+  ["rasmalai", "Rasmalai", "", "sweet", "pc", 20, 20, 1],
+  ["jalebi", "Jalebi (large)", "", "sweet", "pc", null, 18, 1],
+  ["kheer", "Kheer", "rice pudding", "sweet", "bowl", 40, 45, 1],
+  ["seviyan", "Seviyan kheer", "sewaiyan", "sweet", "bowl", 40, null, 1],
+  ["suji_halwa", "Suji halwa / karah prasad", "sooji sheera kada", "sweet", "bowl", 80, null, 1],
+  ["gajar_halwa", "Gajar halwa", "", "sweet", "bowl", 60, 70, 1],
+  ["besan_ladoo", "Besan ladoo", "laddu", "sweet", "pc", 31, 31, 1],
+  ["pinni", "Pinni", "", "sweet", "pc", 25, 25, 1],
+  ["motichoor", "Motichoor ladoo", "boondi laddu", "sweet", "pc", null, 24, 1],
+  ["barfi", "Barfi (1 pc)", "burfi", "sweet", "pc", null, 15, 1],
+  ["kaju_katli", "Kaju katli (1 pc)", "", "sweet", "pc", null, 6, 1],
+  ["peda", "Peda", "", "sweet", "pc", null, 13, 1],
+  ["kulfi", "Kulfi", "", "sweet", "pc", null, 25, 1],
+  ["ice_cream", "Ice cream (1 scoop)", "", "sweet", "pc", null, 12, 1],
+  ["cake", "Cake / pastry (1 slice)", "", "sweet", "pc", null, 35, 1],
+  ["chocolate", "Milk chocolate (6 small squares)", "dairy milk", "sweet", "fix", 18, null, 1],
+
+  // ---------- Fruits & nuts ----------
+  ["apple", "Apple", "seb", "fruit", "pc", 20, null, 0],
+  ["banana", "Banana", "kela", "fruit", "pc", 25, null, 0],
+  ["mango", "Mango", "aam", "fruit", "pc", 35, null, 0],
+  ["orange", "Orange / kinnow", "santra malta", "fruit", "pc", 15, null, 0],
+  ["guava", "Guava", "amrood", "fruit", "pc", 10, null, 0],
+  ["chikoo", "Chikoo", "sapota", "fruit", "pc", 15, null, 0],
+  ["pear", "Pear", "nashpati", "fruit", "pc", 20, null, 0],
+  ["papaya", "Papaya (cubes)", "papita", "fruit", "bowl", 15, null, 0],
+  ["watermelon", "Watermelon (cubes)", "tarbooz", "fruit", "bowl", 11, null, 0],
+  ["muskmelon", "Kharbooja (cubes)", "muskmelon", "fruit", "bowl", 8, null, 0],
+  ["pomegranate", "Anar (seeds)", "pomegranate", "fruit", "bowl", 25, null, 0],
+  ["grapes", "Grapes (20)", "angoor", "fruit", "fix", 15, null, 0],
+  ["litchi", "Litchi (6)", "lychee", "fruit", "fix", 15, null, 0],
+  ["dates", "Dates / khajoor (1)", "", "fruit", "fix", 6, null, 0],
+  ["makhana", "Makhana (1 katori, roasted)", "fox nut", "fruit", "fix", 15, null, 0],
+  ["chana_roast", "Roasted chana (handful, 30 g)", "bhuna", "fruit", "fix", 15, null, 0],
+  ["peanuts", "Peanuts (handful, 30 g)", "moongphali", "fruit", "fix", 5, null, 1],
+  ["almonds", "Almonds (10)", "badam", "fruit", "fix", 2.5, null, 1],
+  ["namkeen", "Namkeen / bhujia (handful, 30 g)", "", "fruit", "fix", 15, null, 1],
+
+  // ---------- Extras ----------
+  ["sugar_tsp", "Sugar (1 tsp)", "cheeni", "extra", "fix", 5, null, 0],
+  ["gur", "Gur / jaggery (small piece, 10 g)", "jaggery", "extra", "fix", 9, null, 0],
+  ["honey", "Honey (1 tsp)", "shahad", "extra", "fix", 6, null, 0],
+  ["biscuit", "Biscuit, Parle-G / Marie (1)", "", "extra", "fix", 3.8, null, 0],
+  ["rusk", "Rusk (1)", "papay", "extra", "fix", 8, null, 0],
+  ["ketchup", "Ketchup (1 tbsp)", "sauce", "extra", "fix", 4, null, 0],
+  ["achaar", "Achaar (1 tsp)", "pickle", "extra", "fix", 0.5, null, 1],
+  ["butter", "Butter / ghee (1 tsp)", "makhan", "extra", "fix", 0, null, 1]
+];
+
+// Shown as one-tap chips under the plate ("add milk, chai, sugar…")
+const QUICK_EXTRAS = ["milk", "chai_sugar", "sugar_tsp", "dahi", "lassi_sweet", "raita", "salad", "apple"];
+
+</script>
+<script>
+/* ===================== APP CODE ===================== */
+/* T1DTMD — carb counter + insulin dose helper for type 1 diabetes */
+(() => {
+  "use strict";
+  const $ = (s, el = document) => el.querySelector(s);
+  const $$ = (s, el = document) => [...el.querySelectorAll(s)];
+  const esc = s => String(s).replace(/[&<>"']/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
+  const fmt = n => (Math.round(n * 10) / 10).toString();
+  const num = v => { const x = parseFloat(String(v).replace(",", ".")); return isFinite(x) ? x : null; };
+
+  // ---------- storage ----------
+  const K = { set: "kh_settings", plate: "kh_plate", log: "kh_log", mine: "kh_myfoods", recent: "kh_recent" };
+  const load = (k, d) => { try { const v = JSON.parse(localStorage.getItem(k)); return v ?? d; } catch { return d; } };
+  const save = (k, v) => { try { localStorage.setItem(k, JSON.stringify(v)); } catch {} };
+
+  const DEFAULTS = {
+    name: "", perMeal: false, icr: null,
+    icrMeal: { breakfast: null, lunch: null, snack: null, dinner: null },
+    step: 1, corrOn: false, bgUnit: "mgdl", target: null, isf: null,
+    warnAbove: 15, iobHours: 3
+  };
+  let S = Object.assign({}, DEFAULTS, load(K.set, {}));
+  S.icrMeal = Object.assign({}, DEFAULTS.icrMeal, S.icrMeal || {});
+  let plate = load(K.plate, []);
+  let log = load(K.log, []);
+  let mine = load(K.mine, []);
+  let recent = load(K.recent, []);
+
+  const MEALS = [["breakfast", "Breakfast"], ["lunch", "Lunch"], ["snack", "Snack"], ["dinner", "Dinner"]];
+  const autoMeal = () => { const h = new Date().getHours(); return h >= 5 && h < 11 ? "breakfast" : h < 16 && h >= 11 ? "lunch" : h >= 16 && h < 19 ? "snack" : "dinner"; };
+  let meal = autoMeal();
+
+  // ---------- food lookup ----------
+  const toObj = r => ({ id: r[0], n: r[1], alt: r[2], cat: r[3], u: r[4], h: r[5], o: r[6], rich: !!r[7] });
+  let ALL = [];
+  const rebuild = () => { ALL = FOODS.map(toObj).concat(mine.map(m => Object.assign({ cat: "mine", alt: "" }, m))); };
+  rebuild();
+  const byId = id => ALL.find(f => f.id === id);
+
+  function carbsFor(food, src, sizeIdx, qty) {
+    const base = src === "out" ? (food.o ?? food.h) : (food.h ?? food.o);
+    const sizes = UNITS[food.u] && UNITS[food.u].sizes;
+    const mult = sizes ? sizes[sizeIdx][1] : 1;
+    return base * mult * qty;
+  }
+  function portionText(item) {
+    const f = byId(item.id);
+    if (!f) return item.label || "";
+    const sizes = UNITS[f.u] && UNITS[f.u].sizes;
+    const bits = [];
+    if (f.h != null && f.o != null) bits.push(item.src === "out" ? "dhaba/bought" : "home");
+    if (sizes) bits.push(sizes[item.size][0].toLowerCase());
+    const q = item.qty !== 1 ? item.qty + " ×" : "";
+    return [q, bits.join(", ")].filter(Boolean).join(" ");
+  }
+
+  // ---------- dose maths ----------
+  const lowLimit = () => S.bgUnit === "mmol" ? 3.9 : 70;
+  const highLimit = () => S.bgUnit === "mmol" ? 13.9 : 250;
+  const icrNow = () => S.perMeal ? (num(S.icrMeal[meal]) || num(S.icr)) : num(S.icr);
+  const roundStep = (x, st) => Math.round(x / st) * st;
+
+  function calc() {
+    const carbs = plate.reduce((a, i) => a + i.carbs, 0);
+    const icr = icrNow();
+    const bg = S.corrOn ? num($("#bgNow").value) : null;
+    const r = { carbs, icr, bg, food: 0, corr: 0, total: 0, rounded: 0, low: false, ready: false, notes: [] };
+    if (!icr || icr <= 0) return r;
+    r.food = carbs / icr;
+    if (bg != null) {
+      if (bg < lowLimit()) { r.low = true; return r; }
+      const t = num(S.target), isf = num(S.isf);
+      if (t && isf) r.corr = (bg - t) / isf;
+    }
+    r.total = Math.max(0, r.food + r.corr);
+    r.rounded = roundStep(r.total, S.step);
+    r.ready = carbs > 0 || r.corr > 0;
+    return r;
+  }
+
+  function lastDose() {
+    const h = num(S.iobHours) || 3;
+    const cut = Date.now() - h * 3600e3;
+    return log.find(e => e.taken > 0 && e.t > cut);
+  }
+
+  // ---------- rendering ----------
+  function renderMeals() {
+    $("#meals").innerHTML = MEALS.map(([k, l]) =>
+      `<button class="chip" aria-pressed="${k === meal}" data-meal="${k}">${l}</button>`).join("");
+  }
+
+  function renderPlate() {
+    const ul = $("#plate");
+    ul.innerHTML = plate.map((it, i) => `
+      <li>
+        <button class="what" data-edit="${i}"><span>${esc(it.name)}</span><span class="muted small">${esc(portionText(it))}</span></button>
+        <span class="g">${fmt(it.carbs)} g</span>
+        <button class="x" data-del="${i}" aria-label="Remove ${esc(it.name)}">×</button>
+      </li>`).join("");
+    $("#plateEmpty").classList.toggle("hide", plate.length > 0);
+    $("#quick").innerHTML = QUICK_EXTRAS.map(id => byId(id)).filter(Boolean)
+      .map(f => `<button class="chip add" data-quick="${f.id}">+ ${esc(shortName(f.n))}</button>`).join("");
+    save(K.plate, plate);
+  }
+  const shortName = n => n.replace(/\s*\(.*\)/, "").replace("Chai with 1 tsp sugar", "Chai + sugar");
+
+  let lastShown = null;
+  function renderDose() {
+    const r = calc();
+    const icr = r.icr;
+    $("#setupCard").classList.toggle("hide", !!icr);
+    $("#bgCard").classList.toggle("hide", !S.corrOn);
+    $("#bgHint").textContent = S.target && S.isf ? S.bgUnit === "mmol" ? "mmol/L" : "mg/dL" : "set target and correction factor in Settings";
+    $("#ratioLabel").textContent = icr ? `· 1u : ${fmt(icr)} g` : "";
+    renderWho();
+
+    $("#penCarbs").textContent = `${fmt(r.carbs)} g`;
+    const win = $("#penWindow");
+    let unitsTxt = "–", lbl = "", sub = "carbs on your plate";
+    if (!icr) sub = "set your carb ratio";
+    else if (r.low) { unitsTxt = "Low"; sub = "treat the low first"; }
+    else if (r.ready) {
+      unitsTxt = fmt(r.rounded); lbl = r.rounded === 1 ? "unit" : "units";
+      sub = `carbs · ${fmt(r.carbs)} ÷ ${fmt(icr)} = ${fmt(r.food)}` + (r.corr ? ` ${r.corr > 0 ? "+" : "−"} ${fmt(Math.abs(r.corr))} corr.` : "");
+    }
+    $("#penUnits").textContent = unitsTxt;
+    $("#penUnitsLbl").textContent = lbl;
+    $("#penSub").textContent = sub;
+    win.classList.toggle("na", !(r.ready && !r.low));
+    if (unitsTxt !== lastShown && r.ready) { win.classList.remove("bump"); void win.offsetWidth; win.classList.add("bump"); }
+    lastShown = unitsTxt;
+    $("#penSave").disabled = !(icr && (r.ready || plate.length) && !r.low);
+
+    // notes
+    const notes = [];
+    if (r.low) notes.push(["warn", `<b>Your sugar is low (${fmt(r.bg)}).</b> Treat it first with about 15 g of fast sugar (glucose, juice, 3 tsp sugar in water), recheck in 15 minutes, then work out the meal dose.`]);
+    if (r.bg != null && r.bg >= highLimit()) notes.push(["amber", `<b>Sugar is high.</b> Check for ketones and follow your team's sick-day / high sugar plan. Avoid hard exercise until it comes down.`]);
+    const ld = lastDose();
+    if (ld && r.corr > 0) notes.push(["amber", `You logged <b>${fmt(ld.taken)} units at ${timeStr(ld.t)}</b>. That insulin may still be working, so this correction could be too much. The correction part is ${fmt(r.corr)} units.`]);
+    const wa = num(S.warnAbove);
+    if (r.ready && wa && r.rounded > wa) notes.push(["warn", `<b>${fmt(r.rounded)} units is more than your usual limit of ${fmt(wa)}.</b> Double-check the foods and amounts before injecting.`]);
+    if (plate.some(i => i.rich) && r.carbs > 0) notes.push(["amber", `Oily, buttery or creamy food on this plate. Sugar can rise again 3–5 hours later. Ask your team whether to split the dose for meals like this.`]);
+    if (r.ready && r.carbs > 0 && r.carbs < 10 && !r.corr) notes.push(["ok", `Under 10 g of carbs. Many people don't need insulin for a snack this small; follow what your team told you.`]);
+    $("#notes").innerHTML = notes.map(([c, t]) => `<div class="note ${c}">${t}</div>`).join("");
+    const serious = notes.filter(([c, t]) => c === "warn" || (c === "amber" && !t.startsWith("Oily"))).length;
+    if (serious && r.ready && !r.low) $("#penSub").textContent = "⚠ read the note on screen first";
+    return r;
+  }
+
+  // ---------- search ----------
+  let cat = null;
+  function renderCats() {
+    const cats = CATS.concat(mine.length ? [["mine", "My foods"]] : []);
+    $("#cats").innerHTML = cats.map(([k, l]) => `<button class="chip" aria-pressed="${k === cat}" data-cat="${k}">${l}</button>`).join("");
+  }
+  function foodMeta(f) {
+    const u = UNITS[f.u];
+    const v = f.h ?? f.o;
+    return `${fmt(v)} g${u && u.label ? " / " + u.label : ""}`;
+  }
+  function renderResults() {
+    const q = $("#q").value.trim().toLowerCase();
+    let list;
+    if (q) {
+      const words = q.split(/\s+/);
+      list = ALL.filter(f => { const hay = (f.n + " " + f.alt).toLowerCase(); return words.every(w => hay.includes(w)); });
+    } else if (cat) list = ALL.filter(f => f.cat === cat);
+    else list = recent.map(byId).filter(Boolean);
+    const head = !q && !cat && list.length ? `<li class="muted small" style="padding:4px 2px">Recently added</li>` : "";
+    $("#results").innerHTML = head + list.slice(0, 60).map(f =>
+      `<li><button data-food="${f.id}"><span>${esc(f.n)}</span><span class="meta">${foodMeta(f)}<span class="plus" aria-hidden="true"> +</span></span></button></li>`).join("")
+      + (q && !list.length ? `<li class="muted" style="padding:10px 2px">No match for "${esc(q)}". Add it with "Add my own food" below.</li>` : "");
+  }
+
+  // ---------- sheets ----------
+  const sheet = $("#sheet"), scrim = $("#scrim");
+  function openSheet(html, bind) {
+    sheet.onclick = null; sheet.oninput = null;
+    sheet.innerHTML = html;
+    sheet.classList.add("open"); scrim.classList.add("open");
+    bind && bind(sheet);
+    const first = sheet.querySelector("input,button"); first && setTimeout(() => first.focus({ preventScroll: true }), 50);
+  }
+  function closeSheet() { sheet.classList.remove("open"); scrim.classList.remove("open"); }
+  scrim.addEventListener("click", closeSheet);
+  document.addEventListener("keydown", e => { if (e.key === "Escape") closeSheet(); });
+
+  function foodSheet(food, editIdx) {
+    const ex = editIdx != null ? plate[editIdx] : null;
+    const both = food.h != null && food.o != null;
+    let src = ex ? ex.src : (food.h != null ? "home" : "out");
+    const sizes = UNITS[food.u] && UNITS[food.u].sizes;
+    let size = ex ? ex.size : (sizes ? 1 : 0);
+    let qty = ex ? ex.qty : 1;
+    let override = ex && ex.override ? ex.carbs : null;
+
+    const html = `
+      <h3>${esc(food.n)}</h3>
+      <p class="muted small" style="margin:0">${food.cat === "mine" ? "Your food" : "Typical values"}${food.rich ? " · oily / rich" : ""}</p>
+      ${both ? `<div class="seg" role="group" aria-label="Where it's from">
+        <button data-src="home" aria-pressed="${src === "home"}">Made at home</button>
+        <button data-src="out" aria-pressed="${src === "out"}">Dhaba / bought</button></div>`
+        : `<p class="small muted" style="margin:10px 0 0">${food.h != null ? "Home-style portion" : "Dhaba / shop portion"}</p>`}
+      ${sizes ? `<div class="sizes" role="group" aria-label="Size">${sizes.map((s, i) =>
+        `<button class="chip" data-size="${i}" aria-pressed="${i === size}">${s[0]}</button>`).join("")}</div>` : ""}
+      <div class="qty"><button data-q="-1" aria-label="Less">−</button><output id="qOut"></output><button data-q="1" aria-label="More">+</button>
+        <span class="muted small">${UNITS[food.u].label ? "× " + UNITS[food.u].label : "× portion"}</span></div>
+      <p class="big" id="cOut"></p>
+      <label class="field"><span>Know it's different? Type the carbs (g)</span>
+        <input type="number" inputmode="decimal" id="cOverride" placeholder="leave empty to use the estimate" value="${override != null ? fmt(override) : ""}"></label>
+      <button class="btn go" id="addBtn">${ex ? "Update" : "Add to plate"}</button>
+      ${ex ? `<button class="btn danger" id="rmBtn">Remove from plate</button>` : ""}`;
+
+    openSheet(html, sh => {
+      const upd = () => {
+        $("#qOut", sh).textContent = fmt(qty);
+        const est = carbsFor(food, src, size, qty);
+        const ov = num($("#cOverride", sh).value);
+        $("#cOut", sh).textContent = `${fmt(ov != null ? ov : est)} g carbs`;
+        $$("[data-src]", sh).forEach(b => b.setAttribute("aria-pressed", b.dataset.src === src));
+        $$("[data-size]", sh).forEach(b => b.setAttribute("aria-pressed", +b.dataset.size === size));
+      };
+      sh.onclick = e => {
+        const b = e.target.closest("button"); if (!b) return;
+        if (b.dataset.src) { src = b.dataset.src; $("#cOverride", sh).value = ""; }
+        if (b.dataset.size) { size = +b.dataset.size; $("#cOverride", sh).value = ""; }
+        if (b.dataset.q) { qty = Math.max(0.5, qty + 0.5 * +b.dataset.q); $("#cOverride", sh).value = ""; }
+        if (b.id === "addBtn") {
+          const ov = num($("#cOverride", sh).value);
+          const item = { id: food.id, name: food.n, src, size, qty, rich: food.rich,
+            carbs: ov != null ? ov : carbsFor(food, src, size, qty), override: ov != null };
+          if (ex) plate[editIdx] = item; else plate.push(item);
+          recent = [food.id].concat(recent.filter(x => x !== food.id)).slice(0, 12); save(K.recent, recent);
+          closeSheet(); renderPlate(); renderDose(); renderResults();
+          return;
+        }
+        if (b.id === "rmBtn") { plate.splice(editIdx, 1); closeSheet(); renderPlate(); renderDose(); return; }
+        upd();
+      };
+      $("#cOverride", sh).oninput = upd;
+      upd();
+    });
+  }
+
+  function labelSheet() {
+    openSheet(`
+      <h3>Packaged food</h3>
+      <p class="muted small" style="margin:0">Look for "Carbohydrate" per 100 g on the pack.</p>
+      <label class="field"><span>What is it?</span><input type="text" id="lName" placeholder="e.g. Kurkure, Bournvita"></label>
+      <div class="row">
+        <label class="field"><span>Carbs per 100 g</span><input type="number" inputmode="decimal" id="lPer"></label>
+        <label class="field"><span>Grams you'll eat</span><input type="number" inputmode="decimal" id="lG"></label>
+      </div>
+      <p class="big" id="lOut">0 g carbs</p>
+      <button class="btn go" id="lAdd">Add to plate</button>`, sh => {
+      const c = () => { const p = num($("#lPer", sh).value), g = num($("#lG", sh).value); return p && g ? p * g / 100 : 0; };
+      sh.oninput = () => { $("#lOut", sh).textContent = `${fmt(c())} g carbs`; };
+      $("#lAdd", sh).onclick = () => {
+        const v = c(); if (!v) return;
+        const name = $("#lName", sh).value.trim() || "Packaged food";
+        plate.push({ id: null, name, label: `${fmt(num($("#lG", sh).value))} g`, carbs: v, qty: 1, override: true, rich: false });
+        closeSheet(); renderPlate(); renderDose();
+      };
+    });
+  }
+
+  function customSheet() {
+    openSheet(`
+      <h3>Add my own food</h3>
+      <p class="muted small" style="margin:0">For mom's recipes, your usual dhaba, or anything missing.</p>
+      <label class="field"><span>Name</span><input type="text" id="mName" placeholder="e.g. Mom's methi paratha"></label>
+      <label class="field"><span>Measured as</span>
+        <select id="mUnit"><option value="pc">1 piece (small / medium / large)</option><option value="bowl">1 katori (200 ml)</option>
+        <option value="glass">1 glass (250 ml)</option><option value="plate">1 plate</option><option value="fix">1 fixed portion</option></select></label>
+      <div class="row">
+        <label class="field"><span>Carbs, home (g)</span><input type="number" inputmode="decimal" id="mH"></label>
+        <label class="field"><span>Carbs, bought (g)</span><input type="number" inputmode="decimal" id="mO" placeholder="optional"></label>
+      </div>
+      <div class="switch"><label for="mRich">Oily / buttery / creamy</label><input type="checkbox" id="mRich"></div>
+      <p class="muted small">Tip: a medium home roti is about 15 g. If yours uses about 1½ rotis' worth of atta, it's about 22 g.</p>
+      <button class="btn go" id="mSave">Save food</button>`, sh => {
+      $("#mSave", sh).onclick = () => {
+        const n = $("#mName", sh).value.trim(); const h = num($("#mH", sh).value); const o = num($("#mO", sh).value);
+        if (!n || (h == null && o == null)) { toast("Add a name and at least one carb number"); return; }
+        mine.push({ id: "my_" + Date.now(), n, u: $("#mUnit", sh).value, h: h ?? null, o: o ?? null, rich: $("#mRich", sh).checked });
+        save(K.mine, mine); rebuild(); renderCats(); renderMine();
+        closeSheet(); toast("Saved to My foods");
+        cat = "mine"; $("#q").value = ""; renderCats(); renderResults();
+      };
+    });
+  }
+
+  function saveSheet() {
+    const r = calc();
+    const suggested = r.ready ? r.rounded : 0;
+    const icr = r.icr;
+    const unitTxt = S.bgUnit === "mmol" ? "mmol/L" : "mg/dL";
+    openSheet(`
+      <h3>Save this meal</h3>
+      <p class="muted small" style="margin:0">${MEALS.find(m => m[0] === meal)[1]} · ${new Date().toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })}</p>
+      <ul class="breakdown">
+        <li><span>Carbs</span><span>${fmt(r.carbs)} g</span></li>
+        <li><span>Food dose (${fmt(r.carbs)} ÷ ${fmt(icr)})</span><span>${fmt(r.food)} u</span></li>
+        ${r.bg != null ? `<li><span>Correction (sugar ${fmt(r.bg)} ${unitTxt})</span><span>${r.corr >= 0 ? "+" : "−"}${fmt(Math.abs(r.corr))} u</span></li>` : ""}
+        <li class="total"><span>Suggested, rounded to ${S.step == 0.5 ? "½" : "1"} unit</span><span>${fmt(suggested)} u</span></li>
+      </ul>
+      <label class="field"><span>Units you actually took</span><input type="number" inputmode="decimal" id="sTaken" value="${fmt(suggested)}" step="${S.step}"></label>
+      <button class="btn go" id="sSave">Save to log</button>
+      <button class="btn ghost" id="sKeep">Save and keep plate</button>`, sh => {
+      const doSave = clear => {
+        const taken = num($("#sTaken", sh).value) ?? 0;
+        log.unshift({ t: Date.now(), meal, carbs: r.carbs, bg: r.bg, icr, suggested, taken,
+          items: plate.map(i => i.name + (i.qty !== 1 ? " ×" + i.qty : "")) });
+        save(K.log, log);
+        if (clear) { plate = []; $("#bgNow").value = ""; renderPlate(); }
+        closeSheet(); renderDose(); renderLog(); toast("Saved to log");
+      };
+      $("#sSave", sh).onclick = () => doSave(true);
+      $("#sKeep", sh).onclick = () => doSave(false);
+    });
+  }
+
+  // ---------- log ----------
+  const timeStr = t => new Date(t).toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" });
+  function renderLog() {
+    if (!log.length) { $("#logList").innerHTML = `<div class="card"><p class="empty">Nothing saved yet. After you work out a dose, tap Save and it shows up here with the time, carbs and units.</p></div>`; return; }
+    const days = {};
+    log.forEach((e, i) => { const k = new Date(e.t).toDateString(); (days[k] = days[k] || []).push([e, i]); });
+    const today = new Date().toDateString(), yest = new Date(Date.now() - 864e5).toDateString();
+    $("#logList").innerHTML = Object.entries(days).slice(0, 30).map(([d, arr]) => {
+      const c = arr.reduce((a, [e]) => a + e.carbs, 0), u = arr.reduce((a, [e]) => a + (e.taken || 0), 0);
+      const title = d === today ? "Today" : d === yest ? "Yesterday" : new Date(arr[0][0].t).toLocaleDateString([], { weekday: "short", day: "numeric", month: "short" });
+      return `<div class="card day"><h2><span>${title}</span><span class="muted small">${fmt(c)} g · ${fmt(u)} u</span></h2>
+        ${arr.map(([e, i]) => `<div class="entry"><div class="t">${timeStr(e.t)}</div>
+          <div class="body"><div>${MEALS.find(m => m[0] === e.meal)?.[1] || ""} · ${fmt(e.carbs)} g${e.bg != null ? ` · sugar ${fmt(e.bg)}` : ""}</div>
+          <div class="items">${esc((e.items || []).join(", "))}</div></div>
+          <div class="u">${fmt(e.taken)} u</div><button class="x" data-logdel="${i}" aria-label="Delete entry">×</button></div>`).join("")}</div>`;
+    }).join("");
+  }
+
+  // ---------- settings ----------
+  function fillSettings() {
+    $("#userName").value = S.name || "";
+    $("#perMeal").checked = S.perMeal;
+    $("#icrOne").value = S.icr ?? "";
+    $$("#icrMealWrap input").forEach(i => i.value = S.icrMeal[i.dataset.meal] ?? "");
+    $("#icrOneWrap").classList.toggle("hide", S.perMeal);
+    $("#icrMealWrap").classList.toggle("hide", !S.perMeal);
+    $("#step").value = String(S.step);
+    $("#corrOn").checked = S.corrOn;
+    $("#corrWrap").classList.toggle("hide", !S.corrOn);
+    $("#bgUnit").value = S.bgUnit;
+    $("#target").value = S.target ?? ""; $("#isf").value = S.isf ?? "";
+    $("#target").placeholder = S.bgUnit === "mmol" ? "e.g. 6.5" : "e.g. 120";
+    $("#isf").placeholder = S.bgUnit === "mmol" ? "e.g. 2.5" : "e.g. 50";
+    $("#warnAbove").value = S.warnAbove ?? ""; $("#iobHours").value = S.iobHours ?? "";
+  }
+  function readSettings() {
+    S.name = $("#userName").value.trim();
+    S.perMeal = $("#perMeal").checked;
+    S.icr = num($("#icrOne").value);
+    $$("#icrMealWrap input").forEach(i => S.icrMeal[i.dataset.meal] = num(i.value));
+    if (S.perMeal && !S.icr) S.icr = S.icrMeal.lunch || S.icrMeal.dinner || S.icrMeal.breakfast || S.icrMeal.snack;
+    S.step = +$("#step").value;
+    S.corrOn = $("#corrOn").checked;
+    S.bgUnit = $("#bgUnit").value;
+    S.target = num($("#target").value); S.isf = num($("#isf").value);
+    S.warnAbove = num($("#warnAbove").value); S.iobHours = num($("#iobHours").value) || 3;
+    save(K.set, S);
+    $("#icrOneWrap").classList.toggle("hide", S.perMeal);
+    $("#icrMealWrap").classList.toggle("hide", !S.perMeal);
+    $("#corrWrap").classList.toggle("hide", !S.corrOn);
+    $("#target").placeholder = S.bgUnit === "mmol" ? "e.g. 6.5" : "e.g. 120";
+    $("#isf").placeholder = S.bgUnit === "mmol" ? "e.g. 2.5" : "e.g. 50";
+    renderDose();
+  }
+  function renderMine() {
+    $("#mineList").innerHTML = mine.length ? mine.map((m, i) =>
+      `<li><span>${esc(m.n)} <span class="muted small">${m.h != null ? fmt(m.h) + " g home" : ""}${m.h != null && m.o != null ? " · " : ""}${m.o != null ? fmt(m.o) + " g bought" : ""}</span></span>
+       <button class="x" data-minedel="${i}" aria-label="Delete ${esc(m.n)}">×</button></li>`).join("")
+      : `<li class="muted small" style="border:0">None yet.</li>`;
+  }
+
+  // ---------- user ----------
+  const initials = n => (n || "").trim().split(/\s+/).filter(Boolean).slice(0, 2).map(w => w[0].toUpperCase()).join("") || "?";
+  function renderWho() {
+    const n = (S.name || "").trim();
+    $("#whoName").textContent = n ? n.split(/\s+/)[0] : "You";
+    $("#whoAvatar").textContent = initials(n);
+    $("#userAvatar").textContent = initials(n);
+    const icr = icrNow();
+    $("#ratioBig").textContent = icr ? `1 : ${fmt(icr)}` : "–";
+    $("#ratioBigSub").textContent = icr ? `1 unit for every ${fmt(icr)} g carbs${S.perMeal ? " (" + meal + ")" : ""}` : "set below";
+  }
+
+  // ---------- misc ----------
+  let tt;
+  function toast(msg) { const t = $("#toast"); t.textContent = msg; t.classList.add("show"); clearTimeout(tt); tt = setTimeout(() => t.classList.remove("show"), 1800); }
+
+  function showView(v) {
+    ["calc", "log", "user", "set"].forEach(x => $("#view-" + x).classList.toggle("hide", x !== v));
+    $$(".tabs button").forEach(b => b.setAttribute("aria-selected", b.dataset.view === v));
+    $("#pen").classList.toggle("hide", v !== "calc");
+    if (v === "log") renderLog();
+    if (v === "set" || v === "user") { fillSettings(); renderMine(); renderWho(); }
+    window.scrollTo(0, 0);
+  }
+
+  // ---------- events ----------
+  document.addEventListener("click", e => {
+    const b = e.target.closest("button"); if (!b || sheet.contains(b)) return;
+    const d = b.dataset;
+    if (d.meal) { meal = d.meal; renderMeals(); renderDose(); }
+    else if (d.view) showView(d.view);
+    else if (d.cat) { cat = cat === d.cat ? null : d.cat; $("#q").value = ""; renderCats(); renderResults(); }
+    else if (d.food) foodSheet(byId(d.food));
+    else if (d.quick) foodSheet(byId(d.quick));
+    else if (d.edit != null) { const it = plate[+d.edit]; const f = it.id && byId(it.id); if (f) foodSheet(f, +d.edit); }
+    else if (d.del != null) { plate.splice(+d.del, 1); renderPlate(); renderDose(); }
+    else if (d.logdel != null) { if (confirm("Delete this log entry?")) { log.splice(+d.logdel, 1); save(K.log, log); renderLog(); renderDose(); } }
+    else if (d.minedel != null) { if (confirm("Delete this food?")) { mine.splice(+d.minedel, 1); save(K.mine, mine); rebuild(); renderMine(); renderCats(); } }
+  });
+  $("#q").addEventListener("input", () => { if ($("#q").value) { cat = null; renderCats(); } renderResults(); });
+  $("#bgNow").addEventListener("input", renderDose);
+  $("#penSave").addEventListener("click", saveSheet);
+  $("#openLabel").addEventListener("click", labelSheet);
+  $("#openCustom").addEventListener("click", customSheet);
+  $("#openCustom2").addEventListener("click", customSheet);
+  $("#setupSave").addEventListener("click", () => {
+    const v = num($("#setupIcr").value);
+    if (!v || v <= 0) { toast("Enter a number like 10"); return; }
+    S.icr = v; const nm = $("#setupName").value.trim(); if (nm) S.name = nm;
+    save(K.set, S); renderDose(); toast(nm ? `Welcome, ${nm.split(/\s+/)[0]}!` : "Ratio saved");
+  });
+  ["#view-set", "#view-user"].forEach(id => {
+    $(id).addEventListener("input", readSettings);
+    $(id).addEventListener("change", () => { readSettings(); fillSettings(); });
+  });
+
+  $("#exportBtn").addEventListener("click", () => {
+    const data = { app: "t1dtmd", v: 1, exported: new Date().toISOString(), settings: S, log, mine };
+    const a = document.createElement("a");
+    a.href = URL.createObjectURL(new Blob([JSON.stringify(data, null, 1)], { type: "application/json" }));
+    a.download = `t1dtmd-backup-${new Date().toISOString().slice(0, 10)}.json`;
+    a.click(); setTimeout(() => URL.revokeObjectURL(a.href), 2000);
+  });
+  $("#importBtn").addEventListener("click", () => $("#importFile").click());
+  $("#importFile").addEventListener("change", async e => {
+    const f = e.target.files[0]; if (!f) return;
+    try {
+      const d = JSON.parse(await f.text());
+      if (!d || !Array.isArray(d.log)) throw 0;
+      if (!confirm(`Restore backup with ${d.log.length} log entries? This replaces what's on this phone.`)) return;
+      S = Object.assign({}, DEFAULTS, d.settings || {}); log = d.log; mine = d.mine || [];
+      save(K.set, S); save(K.log, log); save(K.mine, mine); rebuild();
+      renderCats(); renderLog(); renderDose(); toast("Backup restored");
+    } catch { toast("That file isn't a T1DTMD backup"); }
+    e.target.value = "";
+  });
+
+  // ---------- go ----------
+  renderMeals(); renderCats(); renderPlate(); renderResults(); renderDose();
+  if ("serviceWorker" in navigator) navigator.serviceWorker.register("sw.js").catch(() => {});
+})();
+
+</script>
 </body>
 </html>

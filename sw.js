@@ -1,6 +1,6 @@
 // Bump VERSION whenever you change any file, so phones pick up the update.
-const VERSION = "khurak-t1d-v1";
-const FILES = ["./", "index.html", "app.js", "foods.js", "manifest.json", "icon.svg", "icon-192.png", "icon-512.png"];
+const VERSION = "t1dtmd-v3"; // no need to change this when you edit index.html
+const FILES = ["./", "index.html", "manifest.json", "icon.svg", "icon-192.png", "icon-512.png"];
 
 self.addEventListener("install", e => {
   e.waitUntil(caches.open(VERSION).then(c => c.addAll(FILES)).then(() => self.skipWaiting()));
