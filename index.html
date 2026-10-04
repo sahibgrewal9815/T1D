@@ -373,7 +373,8 @@ input:focus,select:focus,textarea:focus{outline:none;border-color:var(--dark);ba
 
     <div class="card">
       <h2>Account</h2>
-      <div class="row"><button class="pill-btn" id="chgPw">Change password</button><button class="pill-btn danger" data-act="logout">Log out</button></div>
+      <p class="muted small" style="margin:0 0 10px">Forgot your password? Ask your T1DTMD admin to set a new one.</p>
+      <button class="pill-btn danger" data-act="logout">Log out</button>
     </div>
   </section>
 
@@ -753,7 +754,8 @@ function demoBackend() {
     async getConfig() { return db.config; },
     async saveConfig(c) { db.config = { ...db.config, ...c }; put(); },
     canResetPw: true,
-    async resetPassword(id, pw) { db.pw[id] = pw; put(); }
+    async resetPassword(id, pw) { db.pw[id] = pw; put(); },
+    async deleteUser(id) { delete db.users[id]; delete db.pw[id]; delete db.state[id]; delete db.pay[id]; put(); }
   };
 }
 
@@ -803,7 +805,8 @@ async function supabaseBackend() {
       chk(await sb.from("config").upsert({ k: 1, data: { ...((d && d.data) || {}), ...c } }));
     },
     canResetPw: true,
-    async resetPassword(id, pw) { chk(await sb.rpc("admin_set_password", { p_id: id, p_password: pw })); }
+    async resetPassword(id, pw) { chk(await sb.rpc("admin_set_password", { p_id: id, p_password: pw })); },
+    async deleteUser(id) { chk(await sb.rpc("admin_delete_user", { p_id: id })); }
   };
 }
 
@@ -1302,7 +1305,6 @@ function userApp() {
   $("#openLabel").addEventListener("click", labelSheet);
   $("#openCustom").addEventListener("click", customSheet);
   $("#openCustom2").addEventListener("click", customSheet);
-  $("#chgPw").addEventListener("click", () => pwSheet(B));
   $("#setupSave").addEventListener("click", () => {
     const v = num($("#setupIcr").value);
     if (!v || v <= 0) return toast("Enter a number like 10");
@@ -1379,7 +1381,7 @@ function adminApp() {
     return id;
   }
   function credText(u, pw) {
-    return `Your T1DTMD login\n${location.origin + location.pathname}\nUser ID: ${u.id}\nPassword: ${pw}\n\nPlease change your password from the User tab after logging in.`;
+    return `Your T1DTMD login\n${location.origin + location.pathname}\nUser ID: ${u.id}\nPassword: ${pw}\n\nKeep these safe. Ask your admin if you forget your password.`;
   }
 
   function newUserSheet() {
@@ -1475,7 +1477,10 @@ function adminApp() {
 
       <h2 style="margin-top:22px">Recent meals</h2>
       ${lastLogs.length ? `<ul class="breakdown">${lastLogs.map(e => `<li><span>${new Date(e.t).toLocaleString([], { day: "numeric", month: "short", hour: "2-digit", minute: "2-digit" })} · ${fmt(e.carbs)} g</span><span>${fmt(e.taken)} u</span></li>`).join("")}</ul>` : `<p class="small muted">Nothing logged yet.</p>`}
-      <button class="pill-btn" id="uClose" style="width:100%;margin-top:14px">Close</button>`, sh => {
+      <button class="pill-btn" id="uClose" style="width:100%;margin-top:14px">Close</button>
+      <h2 style="margin-top:26px">Delete user</h2>
+      <p class="small muted" style="margin:0 0 8px">Removes their login, details, food log and payment history. This can't be undone.</p>
+      <button class="pill-btn danger" id="uDel" style="width:100%">Delete ${esc(u.name)}</button>`, sh => {
       const preview = () => {
         const m = Math.max(1, parseInt($("#pMonths", sh).value) || 1);
         const from = u.paidUntil && u.paidUntil > today() ? u.paidUntil : ($("#pDate", sh).value || today());
@@ -1506,6 +1511,13 @@ function adminApp() {
         await B.resetPassword(id, pw); credSheet(u, pw);
       };
       $("#uClose", sh).onclick = closeSheet;
+      $("#uDel", sh).onclick = async () => {
+        const typed = prompt(`To delete ${u.name}, type their user ID: ${u.id}`);
+        if (typed == null) return;
+        if (cleanId(typed) !== u.id) return toast("ID didn't match. Nothing deleted.");
+        try { await B.deleteUser(id); closeSheet(); toast(`${u.name} deleted`); await load(); }
+        catch (er) { toast(errText(er).includes("Something") && /function|rpc|schema cache/i.test(er.message || "") ? "Run the new SQL in Supabase first" : errText(er)); }
+      };
     });
   }
 
