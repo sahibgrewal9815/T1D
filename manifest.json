@@ -1,10 +1,12 @@
 {
+  "id": "./",
   "name": "T1DTMD – carbs & insulin",
   "short_name": "T1DTMD",
   "description": "Carb counter and insulin dose helper for Punjabi and Indian food",
-  "start_url": "./",
+  "start_url": "./index.html",
   "scope": "./",
   "display": "standalone",
+  "orientation": "portrait",
   "background_color": "#F3D2C6",
   "theme_color": "#F3D2C6",
   "icons": [
