@@ -1,0 +1,1624 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#F3D2C6">
+<title>T1DTMD · carbs & insulin</title>
+<link rel="manifest" href="manifest.json">
+<link rel="icon" href="icon-32.png" type="image/png">
+<link rel="apple-touch-icon" href="icon-180.png">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+/* =====================================================================
+   COLOURS & LOOK — change these to restyle the whole app
+   ===================================================================== */
+:root{
+  --ink:#1F1B1A; --ink-2:#4B403D; --muted:#8C7873; --line:rgba(80,40,30,.12);
+  --glass:rgba(255,255,255,.40); --glass-strong:rgba(255,255,255,.62); --glass-line:rgba(255,255,255,.65);
+  --solid:rgba(255,255,255,.92);
+  --dark:#1E1E1E; --dark-2:#2A2A2A;
+  --pink:#F2B5C0; --pink-deep:#D9798C; --peach:#F6D9CF; --rock:#B97462;
+  --warn:#9A1F14; --warn-bg:rgba(255,232,228,.85);
+  --amber:#6B4A00; --amber-bg:rgba(255,244,218,.85);
+  --ok:#1D5A33; --ok-bg:rgba(230,246,234,.85);
+  --r-xl:28px; --r-lg:22px; --r-md:16px;
+  --blur:blur(22px) saturate(150%);
+  --font:"Poppins", ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+}
+*{box-sizing:border-box}
+html,body{margin:0;min-height:100%}
+html{background:#C98C7B}
+body{font-family:var(--font);color:var(--ink);font-size:15px;line-height:1.5;-webkit-tap-highlight-color:transparent;
+  background:
+    radial-gradient(70vmax 40vmax at 20% 0%, rgba(255,236,228,.95), transparent 60%),
+    radial-gradient(60vmax 40vmax at 100% 30%, rgba(242,181,192,.55), transparent 60%),
+    radial-gradient(70vmax 50vmax at 0% 100%, rgba(185,116,98,.70), transparent 60%),
+    radial-gradient(60vmax 45vmax at 100% 100%, rgba(150,80,64,.75), transparent 60%),
+    linear-gradient(180deg,#F5DCD2 0%,#EBC3B6 45%,#CF9180 78%,#A8604F 100%);
+  background-attachment:fixed}
+.blob{position:fixed;width:62vmin;height:62vmin;border-radius:50%;background:var(--pink);filter:blur(30px);opacity:.55;right:-18vmin;top:38vh;pointer-events:none;z-index:-1}
+button,input,select,textarea{font:inherit;color:inherit}
+button{cursor:pointer}
+:focus-visible{outline:2px solid var(--dark);outline-offset:2px}
+.hide{display:none!important}
+.wrap{max-width:560px;margin:0 auto;padding:calc(env(safe-area-inset-top,0px) + 18px) 16px calc(env(safe-area-inset-bottom,0px) + 190px)}
+.muted{color:var(--muted)} .small{font-size:.85rem}
+h2{font-size:1rem;font-weight:500;margin:0 0 10px}
+
+/* cards */
+.card{background:var(--glass);border:1px solid var(--glass-line);-webkit-backdrop-filter:var(--blur);backdrop-filter:var(--blur);border-radius:var(--r-xl);padding:18px;margin-bottom:12px}
+.card.solid{background:var(--solid)}
+.card.dark{background:var(--dark);color:#fff;border-color:var(--dark)}
+.card.dark .muted{color:#A9A3A1}
+
+/* header */
+.top{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:14px}
+.brand{font-weight:400;font-size:1.25rem;margin:0;color:var(--ink-2);letter-spacing:.01em}
+.brand::after{content:"_";color:var(--muted)}
+.who{display:flex;align-items:center;gap:8px;border-radius:999px;padding:4px 14px 4px 4px;font-size:.85rem;color:var(--ink-2);border:1px solid var(--glass-line);background:var(--glass-strong);-webkit-backdrop-filter:var(--blur);backdrop-filter:var(--blur)}
+.who b{font-weight:500;color:var(--ink)}
+.avatar{width:30px;height:30px;border-radius:50%;display:grid;place-items:center;background:var(--dark);color:#fff;font-weight:500;font-size:.8rem;flex:0 0 auto}
+.avatar.lg{width:60px;height:60px;font-size:1.35rem}
+.avatar.pink{background:var(--pink);color:var(--ink)}
+.title-xl{font-weight:400;font-size:2.4rem;line-height:1.05;margin:0;letter-spacing:-.02em}
+.title-xl span{display:block;color:#A79792;font-weight:300}
+
+/* chips & buttons */
+.chips{display:flex;gap:6px;overflow-x:auto;scrollbar-width:none;margin:0 -16px 12px;padding:0 16px 2px}
+.chips::-webkit-scrollbar{display:none}
+.chip{border:1px solid var(--glass-line);background:var(--glass-strong);border-radius:999px;padding:7px 15px;white-space:nowrap;font-size:.88rem}
+.chip[aria-pressed="true"]{background:var(--dark);color:#fff;border-color:var(--dark)}
+.chip.add{background:transparent;border:1px dashed rgba(60,30,25,.3)}
+.cta{display:inline-flex;align-items:center;gap:0;border:0;padding:0;background:none;font-weight:400}
+.cta .lbl{background:var(--dark);color:#fff;border-radius:999px 0 0 999px;padding:12px 26px 12px 20px;margin-right:-10px;font-size:.92rem}
+.cta .arr{width:48px;height:48px;border-radius:50%;background:var(--dark);color:#fff;display:grid;place-items:center;box-shadow:0 0 0 3px rgba(255,240,235,.8);position:relative}
+.cta.block{display:flex;width:100%;margin-top:14px}
+.cta.block .lbl{flex:1;text-align:center;padding:14px 26px}
+.cta:disabled{opacity:.4}
+.pill-btn{border:1px solid rgba(60,30,25,.25);background:rgba(255,255,255,.5);border-radius:999px;padding:8px 16px;font-size:.88rem}
+.pill-btn.dark{background:var(--dark);color:#fff;border-color:var(--dark)}
+.pill-btn.danger{color:var(--warn);border-color:rgba(154,31,20,.35)}
+.link{background:none;border:0;color:var(--ink);padding:8px 0;font-weight:500;text-decoration:underline;text-underline-offset:3px;text-decoration-color:rgba(0,0,0,.25)}
+.x{border:0;background:rgba(255,255,255,.6);width:32px;height:32px;border-radius:50%;font-size:1.1rem;line-height:1;color:var(--muted);flex:0 0 auto}
+
+/* inputs */
+input[type=number],input[type=text],input[type=search],input[type=password],input[type=date],input[type=tel],select,textarea{border:1px solid rgba(255,255,255,.8);border-radius:var(--r-md);padding:11px 14px;background:rgba(255,255,255,.72);width:100%}
+input::placeholder,textarea::placeholder{color:#A8958F}
+input:focus,select:focus,textarea:focus{outline:none;border-color:var(--dark);background:#fff}
+.pill-in{display:flex;align-items:center;gap:10px;background:rgba(255,255,255,.72);border:1px solid rgba(255,255,255,.85);border-radius:999px;padding:6px 6px 6px 6px;margin:10px 0}
+.pill-in .ic{width:40px;height:40px;border-radius:50%;background:#fff;display:grid;place-items:center;flex:0 0 auto;color:var(--ink)}
+.pill-in input{border:0;background:transparent;padding:8px 4px;border-radius:0}
+.pill-in input:focus{background:transparent}
+.pill-in .tag{border:0;background:#fff;border-radius:999px;padding:8px 14px;font-size:.8rem;flex:0 0 auto}
+.field{display:block;margin:10px 0}
+.field>span{display:block;font-size:.82rem;color:var(--muted);margin-bottom:4px}
+.row{display:flex;gap:10px;align-items:center} .row>*{flex:1}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.switch{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:6px 0}
+.switch input{width:22px;height:22px;accent-color:var(--dark)}
+
+/* login */
+.login{min-height:100vh;display:flex;flex-direction:column;justify-content:center;max-width:440px;margin:0 auto;padding:24px 16px}
+.login .card{padding:24px}
+.login .head{display:flex;justify-content:space-between;align-items:baseline;margin-bottom:34px}
+.login h1{font-weight:400;font-size:1.9rem;margin:0 0 6px}
+.fine{font-size:.72rem;color:var(--ink-2);line-height:1.5;max-width:230px;margin:0}
+.err{color:var(--warn);font-size:.85rem;min-height:1.2em;margin:4px 0 0}
+.hero-dark h3{font-weight:400;font-size:1.9rem;margin:0;line-height:1.1}
+.hero-dark p{margin:2px 0 18px}
+
+/* notes */
+.note{border-radius:var(--r-lg);padding:12px 14px;margin-bottom:8px;font-size:.88rem;-webkit-backdrop-filter:var(--blur);backdrop-filter:var(--blur)}
+.note.warn{background:var(--warn-bg);color:var(--warn)}
+.note.amber{background:var(--amber-bg);color:var(--amber)}
+.note.ok{background:var(--ok-bg);color:var(--ok)}
+.note b{font-weight:600}
+
+/* calculator */
+.bg-row{display:flex;align-items:center;gap:12px}
+.bg-row label{flex:1}
+.bg-row input{width:110px;flex:0 0 auto;text-align:right;font-size:1.3rem;font-weight:500}
+.plate-list{list-style:none;margin:0;padding:0}
+.plate-list li{display:flex;align-items:center;gap:10px;padding:10px 0;border-top:1px solid var(--line)}
+.plate-list li:first-child{border-top:0}
+.plate-list .what{flex:1;min-width:0;background:none;border:0;text-align:left;padding:0}
+.plate-list .what span{display:block}
+.plate-list .g{font-weight:500;font-variant-numeric:tabular-nums}
+.empty{color:var(--ink-2);margin:0}
+.quick{display:flex;flex-wrap:wrap;gap:6px;margin-top:12px}
+.quick .chip{font-size:.82rem;padding:6px 11px}
+.search{position:relative}
+.search input{padding-left:42px;border-radius:999px;font-size:1rem}
+.search svg{position:absolute;left:15px;top:50%;transform:translateY(-50%);color:var(--muted)}
+.cats{margin-top:12px;margin-bottom:4px}
+.results{list-style:none;margin:6px 0 0;padding:0;display:grid;gap:6px}
+.results li button{width:100%;display:flex;justify-content:space-between;align-items:center;gap:10px;background:rgba(255,255,255,.55);border:1px solid rgba(255,255,255,.7);border-radius:var(--r-md);padding:12px 14px;text-align:left}
+.results .meta{color:var(--muted);font-size:.82rem;white-space:nowrap}
+.results .plus{display:inline-grid;place-items:center;width:24px;height:24px;border-radius:50%;background:var(--dark);color:#fff;margin-left:8px;font-size:.9rem}
+
+/* dose bar */
+.pen{position:fixed;left:0;right:0;bottom:calc(env(safe-area-inset-bottom,0px) + 82px);padding:0 12px;z-index:20;pointer-events:none}
+.pen-inner{pointer-events:auto;max-width:536px;margin:0 auto;background:rgba(30,30,30,.92);color:#fff;-webkit-backdrop-filter:var(--blur);backdrop-filter:var(--blur);border-radius:var(--r-xl);display:flex;align-items:center;gap:10px;padding:10px 10px 10px 18px;box-shadow:0 16px 40px rgba(60,20,10,.35)}
+.pen-carbs{flex:1;display:flex;flex-direction:column;min-width:0}
+.pen-carbs b{font-size:1.45rem;font-weight:400;font-variant-numeric:tabular-nums;line-height:1.15}
+.pen-carbs span{font-size:.76rem;color:#B9B2AF;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.window{background:#fff;color:var(--ink);border-radius:18px;min-width:104px;padding:4px 12px;display:flex;align-items:baseline;justify-content:center;gap:5px;align-self:stretch}
+.window b{font-size:2.3rem;font-weight:300;font-variant-numeric:tabular-nums;line-height:1.25;letter-spacing:-.03em}
+.window span{color:var(--muted);font-size:.8rem}
+.window.na{background:rgba(255,255,255,.12);color:#8F8784}
+.window.na b{font-size:1.5rem}
+.save{width:52px;height:52px;border-radius:50%;border:0;background:var(--pink);color:var(--ink);display:grid;place-items:center;flex:0 0 auto}
+.save:disabled{background:#3A3A3A;color:#777}
+.window.bump{animation:bump .35s ease}
+@keyframes bump{50%{transform:scale(1.06)}}
+@media (prefers-reduced-motion:reduce){.window.bump{animation:none}.sheet{transition:none!important}}
+
+/* tabs: floating glass bar */
+.tabs{position:fixed;left:12px;right:12px;bottom:calc(env(safe-area-inset-bottom,0px) + 10px);max-width:536px;margin:0 auto;background:rgba(255,255,255,.55);border:1px solid var(--glass-line);-webkit-backdrop-filter:var(--blur);backdrop-filter:var(--blur);border-radius:999px;display:flex;padding:6px;z-index:21;box-shadow:0 10px 30px rgba(60,20,10,.18)}
+.tabs button{flex:1;border:0;background:none;border-radius:999px;padding:8px 0;color:var(--ink-2);font-size:.74rem;display:flex;flex-direction:column;align-items:center;gap:1px}
+.tabs button[aria-selected="true"]{background:var(--dark);color:#fff}
+.tabs svg{width:20px;height:20px}
+
+/* sheets */
+.scrim{position:fixed;inset:0;background:rgba(60,25,15,.35);z-index:30;opacity:0;pointer-events:none;transition:opacity .2s}
+.scrim.open{opacity:1;pointer-events:auto}
+.sheet{position:fixed;left:0;right:0;bottom:0;z-index:31;max-width:560px;margin:0 auto;background:rgba(255,248,245,.9);-webkit-backdrop-filter:var(--blur);backdrop-filter:var(--blur);border-radius:var(--r-xl) var(--r-xl) 0 0;padding:20px 18px calc(env(safe-area-inset-bottom,0px) + 20px);transform:translateY(105%);transition:transform .25s ease;max-height:90vh;overflow-y:auto;visibility:hidden}
+.sheet.open{transform:none;visibility:visible}
+.sheet h3{margin:0 0 2px;font-size:1.35rem;font-weight:500}
+.seg{display:flex;background:rgba(80,40,30,.08);border-radius:999px;padding:4px;margin:14px 0 4px}
+.seg button{flex:1;border:0;background:none;border-radius:999px;padding:9px 6px;color:var(--ink-2)}
+.seg button[aria-pressed="true"]{background:var(--dark);color:#fff}
+.sizes{display:flex;flex-wrap:wrap;gap:6px;margin:12px 0}
+.qty{display:flex;align-items:center;gap:14px;margin:10px 0}
+.qty button{width:44px;height:44px;border-radius:50%;border:1px solid rgba(60,30,25,.2);background:#fff;font-size:1.3rem;line-height:1}
+.qty output{font-size:1.5rem;font-weight:400;min-width:48px;text-align:center;font-variant-numeric:tabular-nums}
+.big{font-size:2.5rem;font-weight:300;letter-spacing:-.03em;font-variant-numeric:tabular-nums;margin:6px 0 0}
+.breakdown{font-variant-numeric:tabular-nums;margin:8px 0;padding:0;list-style:none}
+.breakdown li{display:flex;justify-content:space-between;padding:7px 0;border-top:1px dashed var(--line)}
+.breakdown li:first-child{border-top:0}
+.breakdown li.total{font-weight:600;border-top:1px solid var(--ink)}
+
+/* log */
+.day h2{display:flex;justify-content:space-between}
+.entry{border-top:1px solid var(--line);padding:10px 0;display:flex;gap:12px;align-items:center}
+.entry:first-of-type{border-top:0}
+.entry .t{width:54px;color:var(--muted);font-size:.85rem;font-variant-numeric:tabular-nums}
+.entry .body{flex:1;min-width:0}
+.entry .u{font-weight:600;white-space:nowrap}
+.entry .items{color:var(--muted);font-size:.82rem}
+
+/* user + admin */
+.profile{display:flex;align-items:center;gap:14px}
+.profile h3{margin:0;font-weight:500;font-size:1.2rem}
+.kv{display:grid;grid-template-columns:auto 1fr;gap:4px 14px;font-size:.9rem;margin:12px 0 0}
+.kv dt{color:var(--muted)} .kv dd{margin:0}
+.ratio-hero{display:flex;align-items:baseline;gap:12px;margin:0 0 6px}
+.ratio-hero b{white-space:nowrap;font-size:2.6rem;font-weight:300;letter-spacing:-.03em;line-height:1}
+.ratio-hero span{color:var(--muted);flex:1;font-size:.88rem}
+.status{display:inline-block;border-radius:999px;padding:3px 10px;font-size:.75rem;font-weight:500;white-space:nowrap}
+.status.ok{background:var(--ok-bg);color:var(--ok)}
+.status.due{background:var(--amber-bg);color:var(--amber)}
+.status.exp{background:var(--warn-bg);color:var(--warn)}
+.status.off{background:rgba(0,0,0,.08);color:var(--ink-2)}
+.stats{display:grid;grid-template-columns:repeat(4,1fr);gap:6px;margin-top:16px}
+.stats div{background:rgba(255,255,255,.08);border-radius:16px;padding:10px 8px;text-align:center}
+.stats b{display:block;font-size:1.35rem;font-weight:400}
+.stats span{font-size:.7rem;color:#B9B2AF}
+.ulist{list-style:none;margin:0;padding:0;display:grid;gap:8px}
+.ulist button{width:100%;display:flex;align-items:center;gap:12px;background:rgba(255,255,255,.6);border:1px solid rgba(255,255,255,.75);border-radius:var(--r-lg);padding:12px;text-align:left}
+.ulist .nm{flex:1;min-width:0}
+.ulist .nm b{display:block;font-weight:500}
+.ulist .nm span{font-size:.8rem;color:var(--muted)}
+.cred{background:var(--dark);color:#fff;border-radius:var(--r-lg);padding:16px;font-size:.95rem;line-height:1.8;margin:12px 0}
+.cred b{font-weight:500;color:var(--pink)}
+.demo{background:var(--dark);color:#fff;text-align:center;font-size:.75rem;padding:6px 10px;border-radius:999px;margin:0 auto 12px;max-width:max-content}
+.toast{position:fixed;left:50%;top:calc(env(safe-area-inset-top,0px) + 14px);transform:translate(-50%,-300%);background:var(--dark);color:#fff;padding:10px 18px;border-radius:999px;z-index:40;transition:transform .25s;white-space:nowrap;max-width:90vw;overflow:hidden;text-overflow:ellipsis}
+.toast.show{transform:translate(-50%,0)}
+.loading{min-height:100vh;display:grid;place-items:center;color:var(--ink-2)}
+@supports not ((backdrop-filter:blur(1px)) or (-webkit-backdrop-filter:blur(1px))){
+  .card,.sheet,.tabs{background:rgba(255,246,242,.95)}
+}
+
+/* full-screen ratio check after login */
+.ratio-gate{position:fixed;inset:0;z-index:35;display:flex;align-items:center;justify-content:center;padding:calc(env(safe-area-inset-top,0px) + 24px) 16px calc(env(safe-area-inset-bottom,0px) + 24px);background:rgba(246,222,212,.55);-webkit-backdrop-filter:blur(28px) saturate(150%);backdrop-filter:blur(28px) saturate(150%);overflow-y:auto}
+.rg-card{width:100%;max-width:440px;background:rgba(255,255,255,.72);border:1px solid var(--glass-line);border-radius:var(--r-xl);padding:30px 22px 24px;text-align:center;box-shadow:0 20px 60px rgba(90,40,25,.18)}
+.rg-card .avatar{margin:0 auto 10px}
+.rg-card h1{font-weight:400;font-size:1.7rem;line-height:1.2;margin:4px 0 8px}
+.rg-one{display:flex;align-items:center;justify-content:center;gap:10px;margin:22px 0 6px;font-size:1.2rem;color:var(--ink-2)}
+.rg-one input{width:130px;text-align:center;font-size:2.6rem;font-weight:300;padding:6px 10px;border-radius:20px}
+.rg-one input::-webkit-inner-spin-button,.rg-one input::-webkit-outer-spin-button{-webkit-appearance:none;margin:0}
+.rg-one input{-moz-appearance:textfield}
+.rg-meals{text-align:left;margin-top:16px}
+.rg-meals input{font-size:1.3rem;text-align:center}
+</style>
+</head>
+<body>
+<div class="blob" aria-hidden="true"></div>
+
+<!-- ======================= LOADING ======================= -->
+<div class="loading" id="screen-loading">Loading…</div>
+
+<!-- ======================= LOGIN ======================= -->
+<section class="login hide" id="screen-login">
+  <p class="demo hide" id="demoBadge">Demo mode · data stays on this device</p>
+  <div class="card">
+    <div class="head"><span class="brand">T1DTMD</span><span class="muted small">Members only</span></div>
+    <h1>Log in</h1>
+    <form id="loginForm" autocomplete="on">
+      <label class="pill-in"><span class="ic" aria-hidden="true">@</span>
+        <input type="text" id="liId" placeholder="User ID" autocomplete="username" autocapitalize="none" spellcheck="false" required></label>
+      <label class="pill-in"><span class="ic" aria-hidden="true"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="8" cy="15" r="4"/><path d="m11 12 9-9M17 6l3 3"/></svg></span>
+        <input type="password" id="liPw" placeholder="Password" autocomplete="current-password" required>
+        <button type="button" class="tag" id="liShow">Show</button></label>
+      <p class="err" id="liErr"></p>
+      <div class="row" style="margin-top:10px;align-items:center">
+        <p class="fine">Your login is given by your T1DTMD admin. Forgot it? Ask them to reset it for you.</p>
+        <button class="cta" type="submit" style="flex:0 0 auto" aria-label="Log in"><span class="arr"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><path d="m9 6 6 6-6 6"/></svg></span></button>
+      </div>
+    </form>
+  </div>
+  <div class="card dark hero-dark">
+    <h3>Count carbs.</h3>
+    <p class="muted" style="font-size:1.2rem">Know your dose.</p>
+    <p class="small muted" style="margin:0">Punjabi & Indian food · made for type 1 diabetes</p>
+  </div>
+  <p class="small hide" id="demoHint" style="text-align:center;color:rgba(255,255,255,.9)">Demo admin login: <b>admin</b> / <b>admin123</b></p>
+</section>
+
+<!-- ======================= LOCKED ======================= -->
+<section class="login hide" id="screen-locked">
+  <div class="card solid">
+    <div class="head"><span class="brand">T1DTMD</span><button class="link" data-act="logout">Log out</button></div>
+    <h1 id="lockTitle">Your plan has ended</h1>
+    <p class="muted" id="lockText"></p>
+    <div id="lockPay"></div>
+    <p class="small muted">Already paid? Your admin will switch it back on shortly.</p>
+  </div>
+  <div class="card dark">
+    <p class="small" style="margin:0">Need a dose right now? Carbs ÷ the carb ratio your doctor gave you = units of rapid insulin. Check your sugar, and if you're unsure, call your diabetes team.</p>
+  </div>
+</section>
+
+<!-- ======================= RATIO CHECK (shows after login) ======================= -->
+<section class="ratio-gate hide" id="ratioGate" role="dialog" aria-modal="true" aria-labelledby="rgTitle">
+  <div class="rg-card">
+    <span class="avatar lg pink" data-avatar>?</span>
+    <p class="muted" id="rgHello" style="margin:0">Sat sri akal</p>
+    <h1 id="rgTitle">Confirm your carb ratio</h1>
+    <p class="muted small" style="margin:0">1 unit of insulin covers how many grams of carbs? Use the number your doctor gave you.</p>
+    <div class="rg-one" id="rgOne"><span>1 unit :</span><input type="number" inputmode="decimal" id="rgIcr" placeholder="10" aria-label="Grams of carbs per unit"><span>g</span></div>
+    <div class="grid2 rg-meals hide" id="rgMeals">
+      <label class="field"><span>Breakfast</span><input type="number" inputmode="decimal" data-rgmeal="breakfast"></label>
+      <label class="field"><span>Lunch</span><input type="number" inputmode="decimal" data-rgmeal="lunch"></label>
+      <label class="field"><span>Snack</span><input type="number" inputmode="decimal" data-rgmeal="snack"></label>
+      <label class="field"><span>Dinner</span><input type="number" inputmode="decimal" data-rgmeal="dinner"></label>
+    </div>
+    <p class="small muted" id="rgLast" style="margin:6px 0 0"></p>
+    <p class="err" id="rgErr"></p>
+    <button class="cta block" id="rgGo"><span class="lbl">Continue</span><span class="arr"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><path d="m9 6 6 6-6 6"/></svg></span></button>
+  </div>
+</section>
+
+<!-- ======================= USER APP ======================= -->
+<div class="wrap hide" id="screen-user">
+  <p class="demo hide" data-demo>Demo mode · data stays on this device</p>
+
+  <section id="view-calc">
+    <header class="top">
+      <span class="brand">T1DTMD</span>
+      <button class="who" data-view="user"><span class="avatar" data-avatar>?</span><span><b data-firstname>You</b> <span id="ratioLabel"></span></span></button>
+    </header>
+    <div id="planBanner"></div>
+    <div class="chips" role="group" aria-label="Meal" id="meals"></div>
+
+    <div class="card solid hide" id="setupCard">
+      <h2>First, your carb ratio</h2>
+      <p class="muted small" style="margin-top:-4px">1 unit of insulin covers how many grams of carbs? Your doctor gives you this number, e.g. 10.</p>
+      <div class="row">
+        <input type="number" inputmode="decimal" id="setupIcr" placeholder="e.g. 10" aria-label="Grams per unit">
+        <button class="pill-btn dark" style="flex:0 0 auto;padding:12px 22px" id="setupSave">Save</button>
+      </div>
+    </div>
+
+    <div class="card hide" id="bgCard">
+      <div class="bg-row">
+        <label for="bgNow"><b style="font-weight:500">Sugar now</b><br><span class="muted small" id="bgHint">optional</span></label>
+        <input type="number" inputmode="decimal" id="bgNow" placeholder="—">
+      </div>
+    </div>
+
+    <div class="card">
+      <h2>On your plate</h2>
+      <ul class="plate-list" id="plate"></ul>
+      <p class="empty" id="plateEmpty">Add what you're eating or about to eat.</p>
+      <div class="quick" id="quick"></div>
+    </div>
+
+    <div id="notes"></div>
+
+    <div class="card">
+      <div class="search">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg>
+        <input type="search" id="q" placeholder="Search: paratha, rajma, lassi…" autocomplete="off" aria-label="Search foods">
+      </div>
+      <div class="chips cats" id="cats"></div>
+      <ul class="results" id="results"></ul>
+      <div class="row" style="margin-top:6px">
+        <button class="link" id="openLabel" style="text-align:left">+ Packaged food</button>
+        <button class="link" id="openCustom" style="text-align:right">+ My own food</button>
+      </div>
+    </div>
+  </section>
+
+  <section id="view-log" class="hide">
+    <header class="top"><h1 class="title-xl">Log<span id="logSub">your meals</span></h1></header>
+    <div id="logList"></div>
+    <div class="card">
+      <h2>Download a copy</h2>
+      <p class="muted small" style="margin-top:0">Your log is saved to your account. You can also download it to show your doctor.</p>
+      <button class="pill-btn" id="exportBtn">Download log (.csv)</button>
+    </div>
+  </section>
+
+  <section id="view-user" class="hide">
+    <div class="card solid">
+      <div class="profile">
+        <span class="avatar lg pink" data-avatar>?</span>
+        <div><h3 id="pName">—</h3><span class="muted small" id="pId"></span></div>
+      </div>
+      <dl class="kv" id="pKv"></dl>
+    </div>
+
+    <div class="card dark" id="planCard"></div>
+
+    <div class="card">
+      <h2>My carb ratio</h2>
+      <div class="ratio-hero"><b id="ratioBig">–</b><span id="ratioBigSub">set below</span></div>
+      <div class="switch"><label for="perMeal">Different ratio for each meal</label><input type="checkbox" id="perMeal"></div>
+      <label class="field" id="icrOneWrap"><span>1 unit for every … g carbs</span><input type="number" inputmode="decimal" id="icrOne" placeholder="e.g. 10"></label>
+      <div class="grid2 hide" id="icrMealWrap">
+        <label class="field"><span>Breakfast</span><input type="number" inputmode="decimal" data-meal="breakfast"></label>
+        <label class="field"><span>Lunch</span><input type="number" inputmode="decimal" data-meal="lunch"></label>
+        <label class="field"><span>Snack</span><input type="number" inputmode="decimal" data-meal="snack"></label>
+        <label class="field"><span>Dinner</span><input type="number" inputmode="decimal" data-meal="dinner"></label>
+      </div>
+      <label class="field"><span>My pen / syringe doses in steps of</span>
+        <select id="step"><option value="1">1 unit</option><option value="0.5">½ unit</option></select></label>
+    </div>
+
+    <div class="card">
+      <h2>My correction</h2>
+      <div class="switch"><label for="corrOn">Add a correction when I enter my sugar</label><input type="checkbox" id="corrOn"></div>
+      <div id="corrWrap" class="hide">
+        <label class="field"><span>Sugar units</span><select id="bgUnit"><option value="mgdl">mg/dL</option><option value="mmol">mmol/L</option></select></label>
+        <div class="grid2">
+          <label class="field"><span>Target sugar</span><input type="number" inputmode="decimal" id="target"></label>
+          <label class="field"><span>1 unit lowers sugar by</span><input type="number" inputmode="decimal" id="isf"></label>
+        </div>
+        <p class="muted small">Ask your diabetes team for these two numbers (target and correction factor / ISF).</p>
+      </div>
+    </div>
+
+    <div class="card">
+      <h2>Account</h2>
+      <p class="muted small" style="margin:0 0 10px">Forgot your password? Ask your T1DTMD admin to set a new one.</p>
+      <button class="pill-btn danger" data-act="logout">Log out</button>
+    </div>
+  </section>
+
+  <section id="view-set" class="hide">
+    <header class="top"><h1 class="title-xl">Settings<span>& safety</span></h1></header>
+    <div class="card">
+      <h2>Safety checks</h2>
+      <label class="field"><span>Warn me if a dose is more than … units</span><input type="number" inputmode="decimal" id="warnAbove" placeholder="e.g. 15"></label>
+      <label class="field"><span>My rapid insulin keeps working for about … hours</span><input type="number" inputmode="decimal" id="iobHours" placeholder="3"></label>
+    </div>
+    <div class="card">
+      <h2>My foods</h2>
+      <ul class="plate-list" id="mineList"></ul>
+      <button class="link" id="openCustom2">+ Add my own food</button>
+    </div>
+    <div class="card">
+      <h2>About these numbers</h2>
+      <p class="small muted" style="margin:0">Carb values come from the ISPAD Indian foods carb counting booklet, the "Quick Guide to Carbohydrate Counting" by Sheryl Salis, and standard food tables. They are estimates: dhaba sizes, oil and sugar vary a lot. T1DTMD only does the maths with the ratio you enter; it does not replace advice from your doctor or diabetes educator. If a suggested number ever looks wrong, trust your own judgement and your team.</p>
+    </div>
+  </section>
+</div>
+
+<!-- ======================= ADMIN ======================= -->
+<div class="wrap hide" id="screen-admin">
+  <p class="demo hide" data-demo>Demo mode · data stays on this device</p>
+  <section id="view-users">
+    <header class="top"><span class="brand">T1DTMD</span><span class="who"><span class="avatar">A</span><b>Admin</b></span></header>
+    <div class="card dark">
+      <h1 class="title-xl" id="aMonth" style="color:#fff">—</h1>
+      <p class="muted" style="margin:6px 0 0" id="aExpected"></p>
+      <div class="stats" id="aStats"></div>
+    </div>
+    <div class="row" style="margin:16px 0 10px">
+      <div class="search"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg>
+        <input type="search" id="aQ" placeholder="Search name, ID, mobile" aria-label="Search users"></div>
+    </div>
+    <div class="chips" id="aFilter"></div>
+    <ul class="ulist" id="aList"></ul>
+    <button class="cta block" id="aNew"><span class="lbl">Add new user</span><span class="arr">+</span></button>
+  </section>
+  <section id="view-aset" class="hide">
+    <header class="top"><h1 class="title-xl">Settings<span>subscription</span></h1></header>
+    <div class="card">
+      <h2>Subscription</h2>
+      <label class="field"><span>Default monthly fee (₹)</span><input type="number" inputmode="decimal" id="cFee" placeholder="e.g. 199"></label>
+      <label class="field"><span>Grace days after a plan ends (app keeps working)</span><input type="number" inputmode="numeric" id="cGrace" placeholder="7"></label>
+      <label class="field"><span>Your UPI ID (users pay here)</span><input type="text" id="cUpi" placeholder="yourname@okaxis" autocapitalize="none"></label>
+      <label class="field"><span>Name shown in UPI apps</span><input type="text" id="cPayee" placeholder="Your name"></label>
+      <button class="pill-btn dark" id="cSave">Save</button>
+    </div>
+    <div class="card">
+      <h2>Account</h2>
+      <div class="row"><button class="pill-btn" id="aChgPw">Change my password</button><button class="pill-btn danger" data-act="logout">Log out</button></div>
+    </div>
+  </section>
+</div>
+
+<!-- dose bar -->
+<div class="pen hide" id="pen">
+  <div class="pen-inner">
+    <div class="pen-carbs"><b id="penCarbs">0 g</b><span id="penSub">carbs on your plate</span></div>
+    <div class="window na" id="penWindow" aria-live="polite"><b id="penUnits">–</b><span id="penUnitsLbl"></span></div>
+    <button class="save" id="penSave" disabled aria-label="Save to log"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><path d="m9 6 6 6-6 6"/></svg></button>
+  </div>
+</div>
+
+<nav class="tabs hide" role="tablist" id="tabsUser">
+  <button role="tab" aria-selected="true" data-view="calc"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="8.5"/><circle cx="12" cy="12" r="4"/></svg>Calculate</button>
+  <button role="tab" aria-selected="false" data-view="log"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 4h14v16H5z"/><path d="M9 9h6M9 13h6M9 17h3"/></svg>Log</button>
+  <button role="tab" aria-selected="false" data-view="user"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="8" r="4"/><path d="M4 21c1.5-4 4.5-6 8-6s6.5 2 8 6"/></svg>User</button>
+  <button role="tab" aria-selected="false" data-view="set"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 7h10M18 7h2M4 17h4M12 17h8"/><circle cx="16" cy="7" r="2"/><circle cx="10" cy="17" r="2"/></svg>Settings</button>
+</nav>
+<nav class="tabs hide" role="tablist" id="tabsAdmin">
+  <button role="tab" aria-selected="true" data-view="users"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="9" cy="8" r="3.5"/><path d="M2.5 20c1-3.5 3.5-5 6.5-5s5.5 1.5 6.5 5"/><circle cx="17" cy="9" r="2.5"/><path d="M16 14.5c2.5 0 4.5 1.5 5.5 4.5"/></svg>Users</button>
+  <button role="tab" aria-selected="false" data-view="aset"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 7h10M18 7h2M4 17h4M12 17h8"/><circle cx="16" cy="7" r="2"/><circle cx="10" cy="17" r="2"/></svg>Settings</button>
+</nav>
+
+<div class="scrim" id="scrim"></div>
+<div class="sheet" id="sheet" role="dialog" aria-modal="true"></div>
+<div class="toast" id="toast"></div>
+
+<script>
+/* =====================================================================
+   1) SUPABASE KEYS — paste yours here.
+      Supabase → Project Settings → API (or "Connect"):
+        Project URL           → SUPABASE_URL
+        anon / publishable key → SUPABASE_KEY
+      Leave them empty to run in DEMO MODE (saved on this phone only,
+      admin login: admin / admin123).
+   ===================================================================== */
+const SUPABASE_URL = "https://qqreqrlnjlwljqbirodu.supabase.co";
+const SUPABASE_KEY = "sb_publishable_bM5reP7s3krpoO0pdKjQ0w_f7-7Rm1g";
+const ADMIN_ID = "admin";          // the admin's user ID
+const ID_DOMAIN = "t1dtmd.app";    // user IDs become  id@t1dtmd.app  behind the scenes
+
+/* =====================================================================
+   2) FOOD LIST (edit carbs here)
+   ===================================================================== */
+const UNITS = {
+  pc:    { label: "piece", sizes: [["Small", 0.7], ["Medium", 1], ["Large", 1.4]] },
+  bowl:  { label: "katori", sizes: [["Small katori (150 ml)", 0.75], ["Katori (200 ml)", 1], ["Big bowl (300 ml)", 1.5]] },
+  glass: { label: "glass", sizes: [["Small (150 ml)", 0.6], ["Glass (250 ml)", 1], ["Big (350 ml)", 1.4]] },
+  cup:   { label: "cup", sizes: [["Small cup", 0.7], ["Cup", 1], ["Mug", 1.5]] },
+  plate: { label: "plate", sizes: [["Half / small", 0.6], ["Regular", 1], ["Large", 1.4]] },
+  fix:   { label: "", sizes: null }
+};
+
+const CATS = [
+  ["bread", "Roti & paratha"],
+  ["rice", "Rice"],
+  ["dal", "Dal & sabzi"],
+  ["meat", "Chicken, egg & meat"],
+  ["nashta", "Nashta"],
+  ["street", "Street & fast food"],
+  ["south", "South Indian"],
+  ["drink", "Milk & drinks"],
+  ["sweet", "Mithai & sweets"],
+  ["fruit", "Fruits & nuts"],
+  ["extra", "Extras"]
+];
+
+const FOODS = [
+  // ---------- Roti & paratha ----------
+  ["roti", "Roti / phulka", "chapati chapatti fulka", "bread", "pc", 15, null, 0],
+  ["roti_ghee", "Roti with ghee", "chapati chopri", "bread", "pc", 15, null, 1],
+  ["tandoori_roti", "Tandoori roti", "tandoor", "bread", "pc", null, 33, 0],
+  ["rumali", "Rumali roti", "roomali", "bread", "pc", null, 25, 0],
+  ["missi", "Missi roti", "besan roti", "bread", "pc", 20, 28, 0],
+  ["makki", "Makki di roti", "makki ki roti corn", "bread", "pc", 20, 28, 1],
+  ["bajra", "Bajra roti", "millet bhakri", "bread", "pc", 20, null, 0],
+  ["jowar", "Jowar roti", "millet bhakri", "bread", "pc", 18, null, 0],
+  ["par_plain", "Plain paratha", "parantha parontha tikona", "bread", "pc", 22, 32, 1],
+  ["par_aloo", "Aloo paratha", "parantha potato", "bread", "pc", 30, 45, 1],
+  ["par_gobi", "Gobi paratha", "parantha cauliflower", "bread", "pc", 26, 38, 1],
+  ["par_mooli", "Mooli paratha", "parantha radish", "bread", "pc", 24, 36, 1],
+  ["par_methi", "Methi paratha", "parantha fenugreek", "bread", "pc", 22, 32, 1],
+  ["par_paneer", "Paneer paratha", "parantha", "bread", "pc", 22, 34, 1],
+  ["par_pyaz", "Pyaz paratha", "parantha onion", "bread", "pc", 25, 36, 1],
+  ["par_mix", "Mix veg paratha", "parantha", "bread", "pc", 24, 35, 1],
+  ["par_dal", "Dal / sattu paratha", "parantha", "bread", "pc", 20, 30, 1],
+  ["par_lachha", "Lachha paratha", "parantha laccha", "bread", "pc", 28, 38, 1],
+  ["naan", "Naan (plain)", "nan", "bread", "pc", null, 47, 0],
+  ["naan_butter", "Butter naan", "nan", "bread", "pc", null, 48, 1],
+  ["naan_garlic", "Garlic naan", "nan", "bread", "pc", null, 50, 1],
+  ["kulcha", "Kulcha (plain)", "kulche", "bread", "pc", null, 33, 0],
+  ["kulcha_amr", "Amritsari kulcha (stuffed)", "kulche aloo", "bread", "pc", null, 55, 1],
+  ["bhatura", "Bhatura", "bhature", "bread", "pc", 30, 40, 1],
+  ["puri", "Puri", "poori", "bread", "pc", 8, 10, 1],
+  ["bread_white", "Bread slice (white)", "double roti toast", "bread", "fix", 15, null, 0],
+  ["bread_brown", "Bread slice (brown / atta)", "toast", "bread", "fix", 13, null, 0],
+  ["pav", "Pav / bun", "pao", "bread", "fix", 15, null, 0],
+
+  // ---------- Rice ----------
+  ["rice", "Plain rice", "chawal bhaat", "rice", "bowl", 30, 40, 0],
+  ["jeera_rice", "Jeera rice", "chawal", "rice", "bowl", 32, 42, 1],
+  ["pulao", "Veg pulao", "pulav chawal", "rice", "bowl", 30, 40, 1],
+  ["biryani_veg", "Veg biryani", "chawal", "rice", "bowl", 35, 50, 1],
+  ["biryani_ch", "Chicken / mutton biryani", "chawal", "rice", "bowl", 33, 50, 1],
+  ["khichdi", "Khichdi", "khichri", "rice", "bowl", 35, null, 0],
+  ["curd_rice", "Curd rice", "dahi chawal", "rice", "bowl", 30, null, 0],
+  ["fried_rice", "Fried rice", "chinese", "rice", "bowl", null, 45, 1],
+
+  // ---------- Dal & sabzi ----------
+  ["dal", "Dal (arhar / moong / masoor)", "daal tadka yellow", "dal", "bowl", 25, 28, 0],
+  ["dal_makhani", "Dal makhani / maah di dal", "kaali dal urad", "dal", "bowl", 30, 35, 1],
+  ["rajma", "Rajma", "rajmah kidney beans", "dal", "bowl", 30, 35, 0],
+  ["chole", "Chole / chana masala", "chhole chickpeas", "dal", "bowl", 30, 35, 0],
+  ["kala_chana", "Kala chana", "black chana", "dal", "bowl", 28, null, 0],
+  ["kadhi", "Kadhi pakora", "karhi", "dal", "bowl", 18, 22, 1],
+  ["saag", "Sarson da saag", "saag sarso", "dal", "bowl", 8, 10, 1],
+  ["palak_paneer", "Palak paneer", "", "dal", "bowl", 8, 10, 1],
+  ["shahi_paneer", "Shahi paneer / paneer butter masala", "makhani", "dal", "bowl", 10, 16, 1],
+  ["kadhai_paneer", "Kadhai paneer", "karahi", "dal", "bowl", 8, 10, 1],
+  ["matar_paneer", "Matar paneer", "mutter", "dal", "bowl", 15, 18, 1],
+  ["aloo_gobi", "Aloo gobi", "gobhi", "dal", "bowl", 15, 18, 0],
+  ["aloo_matar", "Aloo matar", "mutter", "dal", "bowl", 20, 22, 0],
+  ["aloo_sabzi", "Aloo sabzi (potato)", "aloo bhaji", "dal", "bowl", 28, 30, 0],
+  ["dum_aloo", "Dum aloo", "", "dal", "bowl", 18, 22, 1],
+  ["bhindi", "Bhindi", "okra ladyfinger", "dal", "bowl", 6, 8, 0],
+  ["baingan", "Baingan bharta", "bartha brinjal", "dal", "bowl", 6, 8, 0],
+  ["mix_veg", "Mix veg", "sabzi", "dal", "bowl", 10, 12, 0],
+  ["lauki", "Lauki / tinda / tori", "ghiya", "dal", "bowl", 6, null, 0],
+  ["band_gobhi", "Band gobhi / cabbage", "patta gobi", "dal", "bowl", 8, null, 0],
+  ["soya_chaap", "Soya chaap (gravy / tikka)", "chap", "dal", "plate", 12, 15, 1],
+  ["raita", "Boondi raita", "", "dal", "bowl", 12, 12, 0],
+  ["raita_veg", "Veg raita (kheera / onion)", "", "dal", "bowl", 8, 8, 0],
+  ["dahi", "Dahi (plain curd)", "curd yogurt", "dal", "bowl", 8, null, 0],
+  ["salad", "Salad (kheera, pyaz, tamatar)", "", "dal", "plate", 5, 5, 0],
+
+  // ---------- Chicken, egg & meat ----------
+  ["butter_chicken", "Butter chicken", "makhani murgh", "meat", "bowl", 6, 12, 1],
+  ["chicken_curry", "Chicken curry", "murgh", "meat", "bowl", 5, 6, 1],
+  ["mutton_curry", "Mutton / meat curry", "rogan josh", "meat", "bowl", 5, 6, 1],
+  ["keema", "Keema", "kheema mince", "meat", "bowl", 5, 6, 1],
+  ["keema_matar", "Keema matar", "", "meat", "bowl", 10, 12, 1],
+  ["egg_curry", "Egg curry", "anda curry", "meat", "bowl", 6, 8, 1],
+  ["fish_curry", "Fish curry", "machhi", "meat", "bowl", 5, 6, 0],
+  ["fish_fry", "Amritsari fish fry (plate)", "machhi", "meat", "plate", null, 15, 1],
+  ["tandoori", "Tandoori chicken (quarter)", "", "meat", "plate", 4, 5, 0],
+  ["tikka", "Chicken tikka (6 pcs)", "", "meat", "plate", 5, 6, 0],
+  ["seekh", "Seekh kebab (2 pcs)", "kabab", "meat", "plate", 5, 6, 1],
+  ["paneer_tikka", "Paneer tikka (6 pcs)", "", "meat", "plate", 6, 8, 1],
+  ["egg_boiled", "Egg (boiled)", "anda", "meat", "fix", 0.5, null, 0],
+  ["omelette", "Omelette (2 eggs)", "anda", "meat", "fix", 2, null, 1],
+  ["bread_omelette", "Bread omelette", "anda", "meat", "plate", null, 30, 1],
+
+  // ---------- Nashta ----------
+  ["poha", "Poha", "pohe", "nashta", "bowl", 30, 35, 0],
+  ["upma", "Upma", "suji", "nashta", "bowl", 30, null, 0],
+  ["daliya", "Daliya (namkeen)", "dalia broken wheat", "nashta", "bowl", 25, null, 0],
+  ["daliya_sweet", "Daliya (sweet, with milk)", "dalia", "nashta", "bowl", 40, null, 0],
+  ["oats", "Oats with milk", "porridge", "nashta", "bowl", 30, null, 0],
+  ["cornflakes", "Cornflakes with milk", "cereal", "nashta", "bowl", 35, null, 0],
+  ["chilla", "Besan / moong chilla", "cheela pudla", "nashta", "pc", 12, null, 0],
+  ["sandwich", "Veg sandwich", "", "nashta", "pc", 22, 30, 0],
+  ["sandwich_grill", "Grilled aloo sandwich", "", "nashta", "pc", 30, 35, 1],
+  ["sprouts", "Sprouts chaat", "moong", "nashta", "bowl", 25, null, 0],
+
+  // ---------- Street & fast food ----------
+  ["samosa", "Samosa", "", "street", "pc", 30, 32, 1],
+  ["pakora", "Pakore (4–5 pcs)", "pakoda bhajia", "street", "plate", 15, 20, 1],
+  ["bread_pakora", "Bread pakora", "", "street", "pc", 24, 26, 1],
+  ["aloo_tikki", "Aloo tikki", "", "street", "pc", 15, 18, 1],
+  ["tikki_chaat", "Tikki chaat (plate)", "", "street", "plate", null, 45, 1],
+  ["golgappe", "Golgappe (6 pcs)", "pani puri gol gappa", "street", "plate", null, 31, 0],
+  ["dahi_bhalla", "Dahi bhalla (1 pc)", "dahi vada", "street", "pc", 22, 22, 0],
+  ["papdi_chaat", "Papdi chaat (plate)", "", "street", "plate", null, 40, 1],
+  ["chole_kulche", "Chole kulche (plate)", "kulche", "street", "plate", null, 65, 1],
+  ["chole_bhature", "Chole bhature (plate of 2)", "chhole", "street", "plate", null, 100, 1],
+  ["pav_bhaji", "Pav bhaji (bhaji + 2 pav)", "", "street", "plate", 55, 60, 1],
+  ["momos", "Momos, steamed (6 pcs)", "momo", "street", "plate", 45, 45, 0],
+  ["momos_fried", "Momos, fried (6 pcs)", "momo", "street", "plate", null, 50, 1],
+  ["spring_roll", "Spring roll", "", "street", "pc", null, 15, 1],
+  ["chowmein", "Chowmein / noodles (plate)", "hakka noodles", "street", "plate", 40, 60, 1],
+  ["manchurian", "Manchurian (gravy)", "", "street", "bowl", null, 20, 1],
+  ["maggi", "Maggi (1 packet)", "noodles", "street", "fix", 44, null, 1],
+  ["pizza", "Pizza slice (medium pizza)", "", "street", "pc", null, 25, 1],
+  ["burger", "Burger (veg / aloo tikki)", "", "street", "pc", null, 45, 1],
+  ["burger_ch", "Burger (chicken)", "", "street", "pc", null, 40, 1],
+  ["fries", "French fries", "chips", "street", "plate", null, 45, 1],
+  ["pasta", "Pasta (white / red sauce)", "", "street", "bowl", 35, 40, 1],
+  ["roll", "Kathi roll / frankie", "wrap", "street", "pc", null, 35, 1],
+
+  // ---------- South Indian ----------
+  ["dosa", "Plain dosa", "dosai", "south", "pc", 15, 30, 0],
+  ["masala_dosa", "Masala dosa (with aloo)", "", "south", "pc", 30, 45, 1],
+  ["idli", "Idli", "", "south", "pc", 7.5, 15, 0],
+  ["medu_vada", "Medu vada", "vada", "south", "pc", 7, 15, 1],
+  ["uttapam", "Uttapam", "", "south", "pc", 30, 45, 0],
+  ["sambhar", "Sambhar", "sambar", "south", "bowl", 15, 30, 0],
+  ["coconut_chutney", "Coconut chutney", "", "south", "bowl", 5, 5, 1],
+
+  // ---------- Milk & drinks ----------
+  ["milk", "Milk (cow / toned)", "doodh", "drink", "glass", 12, null, 0],
+  ["milk_buff", "Milk (buffalo / full cream)", "doodh majh", "drink", "glass", 13, null, 1],
+  ["haldi_milk", "Haldi doodh (no sugar)", "turmeric milk", "drink", "glass", 12, null, 0],
+  ["chai", "Chai, no sugar", "tea", "drink", "cup", 3, null, 0],
+  ["chai_sugar", "Chai with 1 tsp sugar", "tea", "drink", "cup", 8, 10, 0],
+  ["coffee", "Coffee with milk, no sugar", "", "drink", "cup", 5, null, 0],
+  ["lassi_sweet", "Lassi (sweet)", "", "drink", "glass", 35, 45, 1],
+  ["lassi_salt", "Lassi (namkeen)", "", "drink", "glass", 12, 12, 0],
+  ["chaas", "Chaas / buttermilk", "lassi patli", "drink", "glass", 5, 5, 0],
+  ["shake", "Banana / mango shake", "milkshake", "drink", "glass", 40, 55, 0],
+  ["juice_pack", "Juice (packaged)", "real frooti", "drink", "glass", 26, null, 0],
+  ["juice_fresh", "Fresh orange / mosambi juice", "", "drink", "glass", 22, 22, 0],
+  ["cola", "Cold drink (cola etc.)", "soft drink coke pepsi", "drink", "glass", 27, null, 0],
+  ["cola_diet", "Diet / zero cold drink", "coke zero", "drink", "glass", 0, null, 0],
+  ["ganne", "Ganne da juice", "sugarcane", "drink", "glass", null, 40, 0],
+  ["shikanji", "Nimbu pani / shikanji (sweet)", "lemonade", "drink", "glass", 20, 25, 0],
+  ["paneer", "Paneer (100 g)", "cottage cheese", "drink", "fix", 3, null, 1],
+
+  // ---------- Sweets ----------
+  ["gulab_jamun", "Gulab jamun (with syrup)", "", "sweet", "pc", 30, 30, 1],
+  ["rasgulla", "Rasgulla (with syrup)", "rosogulla", "sweet", "pc", 25, 25, 0],
+  ["rasgulla_sq", "Rasgulla (syrup squeezed out)", "", "sweet", "pc", 15, 15, 0],
+  ["rasmalai", "Rasmalai", "", "sweet", "pc", 20, 20, 1],
+  ["jalebi", "Jalebi (large)", "", "sweet", "pc", null, 18, 1],
+  ["kheer", "Kheer", "rice pudding", "sweet", "bowl", 40, 45, 1],
+  ["seviyan", "Seviyan kheer", "sewaiyan", "sweet", "bowl", 40, null, 1],
+  ["suji_halwa", "Suji halwa / karah prasad", "sooji sheera kada", "sweet", "bowl", 80, null, 1],
+  ["gajar_halwa", "Gajar halwa", "", "sweet", "bowl", 60, 70, 1],
+  ["besan_ladoo", "Besan ladoo", "laddu", "sweet", "pc", 31, 31, 1],
+  ["pinni", "Pinni", "", "sweet", "pc", 25, 25, 1],
+  ["motichoor", "Motichoor ladoo", "boondi laddu", "sweet", "pc", null, 24, 1],
+  ["barfi", "Barfi (1 pc)", "burfi", "sweet", "pc", null, 15, 1],
+  ["kaju_katli", "Kaju katli (1 pc)", "", "sweet", "pc", null, 6, 1],
+  ["peda", "Peda", "", "sweet", "pc", null, 13, 1],
+  ["kulfi", "Kulfi", "", "sweet", "pc", null, 25, 1],
+  ["ice_cream", "Ice cream (1 scoop)", "", "sweet", "pc", null, 12, 1],
+  ["cake", "Cake / pastry (1 slice)", "", "sweet", "pc", null, 35, 1],
+  ["chocolate", "Milk chocolate (6 small squares)", "dairy milk", "sweet", "fix", 18, null, 1],
+
+  // ---------- Fruits & nuts ----------
+  ["apple", "Apple", "seb", "fruit", "pc", 20, null, 0],
+  ["banana", "Banana", "kela", "fruit", "pc", 25, null, 0],
+  ["mango", "Mango", "aam", "fruit", "pc", 35, null, 0],
+  ["orange", "Orange / kinnow", "santra malta", "fruit", "pc", 15, null, 0],
+  ["guava", "Guava", "amrood", "fruit", "pc", 10, null, 0],
+  ["chikoo", "Chikoo", "sapota", "fruit", "pc", 15, null, 0],
+  ["pear", "Pear", "nashpati", "fruit", "pc", 20, null, 0],
+  ["papaya", "Papaya (cubes)", "papita", "fruit", "bowl", 15, null, 0],
+  ["watermelon", "Watermelon (cubes)", "tarbooz", "fruit", "bowl", 11, null, 0],
+  ["muskmelon", "Kharbooja (cubes)", "muskmelon", "fruit", "bowl", 8, null, 0],
+  ["pomegranate", "Anar (seeds)", "pomegranate", "fruit", "bowl", 25, null, 0],
+  ["grapes", "Grapes (20)", "angoor", "fruit", "fix", 15, null, 0],
+  ["litchi", "Litchi (6)", "lychee", "fruit", "fix", 15, null, 0],
+  ["dates", "Dates / khajoor (1)", "", "fruit", "fix", 6, null, 0],
+  ["makhana", "Makhana (1 katori, roasted)", "fox nut", "fruit", "fix", 15, null, 0],
+  ["chana_roast", "Roasted chana (handful, 30 g)", "bhuna", "fruit", "fix", 15, null, 0],
+  ["peanuts", "Peanuts (handful, 30 g)", "moongphali", "fruit", "fix", 5, null, 1],
+  ["almonds", "Almonds (10)", "badam", "fruit", "fix", 2.5, null, 1],
+  ["namkeen", "Namkeen / bhujia (handful, 30 g)", "", "fruit", "fix", 15, null, 1],
+
+  // ---------- Extras ----------
+  ["sugar_tsp", "Sugar (1 tsp)", "cheeni", "extra", "fix", 5, null, 0],
+  ["gur", "Gur / jaggery (small piece, 10 g)", "jaggery", "extra", "fix", 9, null, 0],
+  ["honey", "Honey (1 tsp)", "shahad", "extra", "fix", 6, null, 0],
+  ["biscuit", "Biscuit, Parle-G / Marie (1)", "", "extra", "fix", 3.8, null, 0],
+  ["rusk", "Rusk (1)", "papay", "extra", "fix", 8, null, 0],
+  ["ketchup", "Ketchup (1 tbsp)", "sauce", "extra", "fix", 4, null, 0],
+  ["achaar", "Achaar (1 tsp)", "pickle", "extra", "fix", 0.5, null, 1],
+  ["butter", "Butter / ghee (1 tsp)", "makhan", "extra", "fix", 0, null, 1]
+];
+
+// Shown as one-tap chips under the plate ("add milk, chai, sugar…")
+const QUICK_EXTRAS = ["milk", "chai_sugar", "sugar_tsp", "dahi", "lassi_sweet", "raita", "salad", "apple"];
+</script>
+
+<script type="module">
+/* =====================================================================
+   3) APP CODE
+   ===================================================================== */
+const $ = (s, el = document) => el.querySelector(s);
+const $$ = (s, el = document) => [...el.querySelectorAll(s)];
+const esc = s => String(s ?? "").replace(/[&<>"']/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
+const fmt = n => (Math.round(n * 10) / 10).toString();
+const num = v => { const x = parseFloat(String(v ?? "").replace(",", ".")); return isFinite(x) ? x : null; };
+const today = () => new Date().toISOString().slice(0, 10);
+const cleanId = s => String(s || "").trim().toLowerCase().split("@")[0].replace(/[^a-z0-9._-]/g, "");
+const idToEmail = id => `${cleanId(id)}@${ID_DOMAIN}`;
+const emailToId = e => String(e || "").split("@")[0];
+const DEMO = !SUPABASE_URL || !SUPABASE_KEY;
+
+function addMonths(dateStr, n) {
+  const [y, m, d] = dateStr.split("-").map(Number);
+  const t = new Date(Date.UTC(y, m - 1 + n, 1));
+  const last = new Date(Date.UTC(t.getUTCFullYear(), t.getUTCMonth() + 1, 0)).getUTCDate();
+  t.setUTCDate(Math.min(d, last));
+  return t.toISOString().slice(0, 10);
+}
+const daysBetween = (a, b) => Math.round((Date.parse(b) - Date.parse(a)) / 864e5);
+const niceDate = s => s ? new Date(s + "T00:00:00").toLocaleDateString([], { day: "numeric", month: "short", year: "numeric" }) : "—";
+
+/* ---------------------------------------------------------------------
+   BACKEND: same functions for Supabase (live) and demo (this phone only)
+   --------------------------------------------------------------------- */
+function demoBackend() {
+  const KEY = "t1dtmd_demo";
+  const db = (() => { try { return JSON.parse(localStorage.getItem(KEY)) || null; } catch { return null; } })()
+    || { users: {}, pw: { [ADMIN_ID]: "admin123" }, state: {}, pay: {}, config: { fee: 199, grace: 7, upi: "", payee: "" }, session: null };
+  const put = () => localStorage.setItem(KEY, JSON.stringify(db));
+  let cb = () => {};
+  const fail = code => { const e = new Error(code); e.code = code; throw e; };
+  return {
+    onAuth(f) { cb = f; setTimeout(() => f(db.session), 0); },
+    async login(id, pw) { id = cleanId(id); if (db.pw[id] == null || db.pw[id] !== pw) fail("auth/invalid-credential"); db.session = id; put(); cb(id); },
+    async logout() { db.session = null; put(); cb(null); },
+    async changePassword(oldPw, newPw) { if (db.pw[db.session] !== oldPw) fail("auth/wrong-password"); db.pw[db.session] = newPw; put(); },
+    async getProfile(id) { return db.users[id] || null; },
+    async loadState(id) { return db.state[id] || null; },
+    async saveState(id, st) { db.state[id] = st; put(); },
+    async listUsers() { return Object.entries(db.users).map(([id, u]) => ({ id, ...u })); },
+    async createUser(id, pw, profile) { if (db.pw[id] != null) fail("auth/email-already-in-use"); db.pw[id] = pw; db.users[id] = profile; put(); },
+    async updateUser(id, patch) { db.users[id] = { ...db.users[id], ...patch }; put(); },
+    async addPayment(id, p, paidUntil) { (db.pay[id] = db.pay[id] || []).unshift(p); db.users[id].paidUntil = paidUntil; put(); },
+    async listPayments(id) { return (db.pay[id] || []).slice(); },
+    async getConfig() { return db.config; },
+    async saveConfig(c) { db.config = { ...db.config, ...c }; put(); },
+    canResetPw: true,
+    async resetPassword(id, pw) { db.pw[id] = pw; put(); },
+    async deleteUser(id) { delete db.users[id]; delete db.pw[id]; delete db.state[id]; delete db.pay[id]; put(); }
+  };
+}
+
+async function supabaseBackend() {
+  const { createClient } = await import("https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/+esm");
+  const sb = createClient(SUPABASE_URL, SUPABASE_KEY);
+  let creator = null;
+  const chk = ({ data, error }) => { if (error) throw error; return data; };
+  const toP = r => r && ({ name: r.name, dob: r.dob || "", mobile: r.mobile || "", address: r.address || "", fee: r.fee,
+    active: r.active !== false, paidUntil: r.paid_until || "", createdAt: r.created_at });
+  const fromP = p => {
+    const o = {};
+    ["name", "mobile", "address", "fee", "active"].forEach(k => { if (k in p) o[k] = p[k]; });
+    if ("dob" in p) o.dob = p.dob || null;
+    if ("paidUntil" in p) o.paid_until = p.paidUntil || null;
+    return o;
+  };
+  return {
+    onAuth(f) { sb.auth.onAuthStateChange((ev, s) => setTimeout(() => f(s ? emailToId(s.user.email) : null), 0)); },
+    async login(id, pw) { chk(await sb.auth.signInWithPassword({ email: idToEmail(id), password: pw })); },
+    async logout() { await sb.auth.signOut(); },
+    async changePassword(oldPw, newPw) {
+      const { data: { session } } = await sb.auth.getSession();
+      chk(await sb.auth.signInWithPassword({ email: session.user.email, password: oldPw }));
+      chk(await sb.auth.updateUser({ password: newPw }));
+    },
+    async getProfile(id) { return toP(chk(await sb.from("profiles").select("*").eq("id", id).maybeSingle())); },
+    async loadState(id) { const d = chk(await sb.from("app_state").select("data").eq("id", id).maybeSingle()); return d ? d.data : null; },
+    async saveState(id, st) { chk(await sb.from("app_state").upsert({ id, data: st, updated_at: new Date().toISOString() })); },
+    async listUsers() { return chk(await sb.from("profiles").select("*")).map(r => ({ id: r.id, ...toP(r) })); },
+    async createUser(id, pw, profile) {
+      // a second, separate client makes the login so the admin stays logged in
+      if (!creator) creator = createClient(SUPABASE_URL, SUPABASE_KEY, { auth: { persistSession: false, autoRefreshToken: false, detectSessionInUrl: false, storageKey: "t1dtmd-creator" } });
+      chk(await creator.auth.signUp({ email: idToEmail(id), password: pw }));
+      await creator.auth.signOut().catch(() => {});
+      chk(await sb.from("profiles").insert({ id, ...fromP(profile) }));
+    },
+    async updateUser(id, patch) { chk(await sb.from("profiles").update(fromP(patch)).eq("id", id)); },
+    async addPayment(id, p, paidUntil) {
+      chk(await sb.from("payments").insert({ id, date: p.date, amount: p.amount, months: p.months, method: p.method, note: p.note || null }));
+      chk(await sb.from("profiles").update({ paid_until: paidUntil }).eq("id", id));
+    },
+    async listPayments(id) { return chk(await sb.from("payments").select("*").eq("id", id).order("date", { ascending: false })); },
+    async getConfig() { const d = chk(await sb.from("config").select("data").eq("k", 1).maybeSingle()); return (d && d.data) || {}; },
+    async saveConfig(c) {
+      const d = chk(await sb.from("config").select("data").eq("k", 1).maybeSingle());
+      chk(await sb.from("config").upsert({ k: 1, data: { ...((d && d.data) || {}), ...c } }));
+    },
+    canResetPw: true,
+    async resetPassword(id, pw) { chk(await sb.rpc("admin_set_password", { p_id: id, p_password: pw })); },
+    async deleteUser(id) { chk(await sb.rpc("admin_delete_user", { p_id: id })); }
+  };
+}
+
+const errText = e => {
+  const c = `${(e && e.code) || ""} ${(e && e.message) || ""}`.toLowerCase();
+  if (c.includes("invalid") && (c.includes("credential") || c.includes("login") || c.includes("email"))) return "Wrong user ID or password.";
+  if (c.includes("wrong-password")) return "Wrong password.";
+  if (c.includes("already") && (c.includes("registered") || c.includes("exists") || c.includes("in-use"))) return "That user ID is already taken.";
+  if (c.includes("weak") || c.includes("at least 6")) return "Password must be at least 6 characters.";
+  if (c.includes("rate limit") || c.includes("too many") || c.includes("over_")) return "Too many tries. Wait a few minutes and try again.";
+  if (c.includes("signup") && c.includes("disabled")) return "Sign-ups are switched off in Supabase. Turn on 'Allow new users to sign up' (step 3).";
+  if (c.includes("failed to fetch") || c.includes("network")) return "No internet. Connect and try again.";
+  if (c.includes("row-level security") || c.includes("permission") || c.includes("not allowed")) return "Not allowed. Did you run the SQL in Supabase (step 4)?";
+  if (c.includes("relation") && c.includes("does not exist")) return "Database tables missing. Run the SQL in Supabase (step 4).";
+  return "Something went wrong" + ((e && e.message) ? `: ${e.message}` : ".");
+};
+
+/* ---------------------------------------------------------------------
+   SHARED UI BITS
+   --------------------------------------------------------------------- */
+let tt;
+function toast(msg) { const t = $("#toast"); t.textContent = msg; t.classList.add("show"); clearTimeout(tt); tt = setTimeout(() => t.classList.remove("show"), 2000); }
+const sheet = $("#sheet"), scrim = $("#scrim");
+function openSheet(html, bind) {
+  sheet.onclick = null; sheet.oninput = null; sheet.onchange = null;
+  sheet.innerHTML = html; sheet.scrollTop = 0;
+  sheet.classList.add("open"); scrim.classList.add("open");
+  bind && bind(sheet);
+}
+function closeSheet() { sheet.classList.remove("open"); scrim.classList.remove("open"); }
+scrim.addEventListener("click", closeSheet);
+document.addEventListener("keydown", e => { if (e.key === "Escape") closeSheet(); });
+const arrow = `<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><path d="m9 6 6 6-6 6"/></svg>`;
+const initials = n => (n || "").trim().split(/\s+/).filter(Boolean).slice(0, 2).map(w => w[0].toUpperCase()).join("") || "?";
+
+function screen(name) {
+  ["loading", "login", "locked", "user", "admin"].forEach(s => $("#screen-" + s).classList.toggle("hide", s !== name));
+  $("#tabsUser").classList.toggle("hide", name !== "user");
+  $("#tabsAdmin").classList.toggle("hide", name !== "admin");
+  $("#pen").classList.toggle("hide", name !== "user");
+  closeSheet();
+}
+
+function planStatus(p, cfg) {
+  if (p.active === false) return { cls: "off", text: "Paused", locked: true, days: null };
+  if (!p.paidUntil) return { cls: "exp", text: "Not paid", locked: true, days: null };
+  const left = daysBetween(today(), p.paidUntil);
+  const grace = num(cfg.grace) ?? 7;
+  if (left >= 0) return { cls: left <= 5 ? "due" : "ok", text: left <= 5 ? `Due in ${left} day${left === 1 ? "" : "s"}` : `Paid till ${niceDate(p.paidUntil)}`, locked: false, days: left };
+  return { cls: "exp", text: `Expired ${-left} day${left === -1 ? "" : "s"} ago`, locked: -left > grace, days: left, graceLeft: grace + left };
+}
+function upiLink(cfg, amount, note) {
+  if (!cfg.upi) return "";
+  const p = new URLSearchParams({ pa: cfg.upi, pn: cfg.payee || "T1DTMD", am: String(amount || ""), cu: "INR", tn: note });
+  return "upi://pay?" + p.toString();
+}
+function payButton(cfg, profile, id) {
+  const link = upiLink(cfg, profile.fee, `T1DTMD ${id}`);
+  return link ? `<a class="cta block" href="${esc(link)}" style="text-decoration:none"><span class="lbl">Pay ₹${esc(profile.fee)} with UPI</span><span class="arr">${arrow}</span></a>`
+    : `<p class="small">Monthly fee: <b>₹${esc(profile.fee ?? "—")}</b>. Ask your admin how to pay.</p>`;
+}
+
+function pwSheet(B) {
+  openSheet(`
+    <h3>Change password</h3>
+    <label class="field"><span>Current password</span><input type="password" id="pwOld" autocomplete="current-password"></label>
+    <label class="field"><span>New password (6+ characters)</span><input type="password" id="pwNew" autocomplete="new-password"></label>
+    <label class="field"><span>New password again</span><input type="password" id="pwNew2" autocomplete="new-password"></label>
+    <p class="err" id="pwErr"></p>
+    <button class="cta block" id="pwGo"><span class="lbl">Update password</span><span class="arr">${arrow}</span></button>`, sh => {
+    $("#pwGo", sh).onclick = async () => {
+      const o = $("#pwOld", sh).value, n = $("#pwNew", sh).value;
+      if (n.length < 6) return $("#pwErr", sh).textContent = "New password must be at least 6 characters.";
+      if (n !== $("#pwNew2", sh).value) return $("#pwErr", sh).textContent = "The two new passwords don't match.";
+      try { await B.changePassword(o, n); closeSheet(); toast("Password changed"); }
+      catch (e) { $("#pwErr", sh).textContent = errText(e); }
+    };
+  });
+}
+
+/* ---------------------------------------------------------------------
+   START
+   --------------------------------------------------------------------- */
+let B;
+try { B = DEMO ? demoBackend() : await supabaseBackend(); }
+catch (e) { $("#screen-loading").textContent = "Couldn't load. Check your internet and the Supabase keys in index.html."; throw e; }
+if (DEMO) { $("#demoBadge").classList.remove("hide"); $("#demoHint").classList.remove("hide"); $$("[data-demo]").forEach(x => x.classList.remove("hide")); }
+
+$("#liShow").onclick = () => { const i = $("#liPw"); i.type = i.type === "password" ? "text" : "password"; $("#liShow").textContent = i.type === "password" ? "Show" : "Hide"; };
+$("#loginForm").addEventListener("submit", async e => {
+  e.preventDefault();
+  $("#liErr").textContent = "";
+  const id = cleanId($("#liId").value), pw = $("#liPw").value;
+  if (!id || !pw) return $("#liErr").textContent = "Enter your user ID and password.";
+  const btn = e.submitter; if (btn) btn.disabled = true;
+  freshLogin = true;
+  try { await B.login(id, pw); } catch (er) {
+    freshLogin = false; $("#liErr").textContent = errText(er) + (DEMO ? " (demo mode: admin / admin123)" : ` [${(er && (er.code || er.message)) || "?"} · ${id}]`); }
+  if (btn) btn.disabled = false;
+});
+document.addEventListener("click", e => { if (e.target.closest("[data-act=logout]")) { if (confirm("Log out?")) B.logout(); } });
+
+let started = null, freshLogin = false;
+B.onAuth(async id => {
+  if (!id) { started = null; $("#ratioGate").classList.add("hide"); screen("login"); return; }
+  if (started === id) return;
+  started = id;
+  screen("loading");
+  try {
+    if (id === ADMIN_ID) await startAdmin();
+    else await startUser(id);
+  } catch (e) {
+    console.error(e);
+    $("#screen-loading").textContent = errText(e);
+    screen("loading");
+  }
+});
+
+/* =====================================================================
+   USER APP
+   ===================================================================== */
+let U = null; // set when a user is logged in
+
+const cacheKey = id => `t1dtmd_cache_${id}`;
+async function startUser(id) {
+  let profile, st, cfg;
+  try {
+    [profile, st, cfg] = await Promise.all([B.getProfile(id), B.loadState(id), B.getConfig()]);
+    const old = JSON.parse(localStorage.getItem(cacheKey(id)) || "null");
+    // if this phone has unsaved changes newer than the server copy, keep them
+    if (old && old.dirty && old.state && (!st || (old.state.updated || 0) > (st.updated || 0))) st = old.state;
+    localStorage.setItem(cacheKey(id), JSON.stringify({ profile, state: st, cfg, dirty: old && old.dirty }));
+  } catch (e) {
+    const c = JSON.parse(localStorage.getItem(cacheKey(id)) || "null");
+    if (!c) throw e;
+    ({ profile, state: st, cfg } = c);
+    setTimeout(() => toast("Offline · using data saved on this phone"), 300);
+  }
+  if (!profile) { $("#liErr").textContent = "No profile found for this ID. Contact your admin."; await B.logout(); return; }
+  const status = planStatus(profile, cfg);
+  if (status.locked) {
+    $("#lockTitle").textContent = profile.active === false ? "Your account is paused" : "Your plan has ended";
+    $("#lockText").textContent = profile.active === false ? "Please contact your admin." :
+      `Sat sri akal ${profile.name.split(" ")[0]}. Your monthly plan ${profile.paidUntil ? "ended on " + niceDate(profile.paidUntil) : "isn't active yet"}. Pay the monthly fee to keep using T1DTMD.`;
+    $("#lockPay").innerHTML = profile.active === false ? "" : payButton(cfg, profile, id);
+    screen("locked");
+    return;
+  }
+  if (!U) U = userApp();
+  const fresh = freshLogin; freshLogin = false;
+  U.start(id, profile, st || {}, cfg, status, fresh);
+  screen("user");
+}
+
+function userApp() {
+  const DEFAULTS = {
+    perMeal: false, icr: null, icrMeal: { breakfast: null, lunch: null, snack: null, dinner: null },
+    step: 1, corrOn: false, bgUnit: "mgdl", target: null, isf: null, warnAbove: 15, iobHours: 3
+  };
+  let uid, profile, cfg, S, plate, log, mine, recent, ALL;
+  const MEALS = [["breakfast", "Breakfast"], ["lunch", "Lunch"], ["snack", "Snack"], ["dinner", "Dinner"]];
+  const autoMeal = () => { const h = new Date().getHours(); return h >= 5 && h < 11 ? "breakfast" : h >= 11 && h < 16 ? "lunch" : h >= 16 && h < 19 ? "snack" : "dinner"; };
+  let meal = autoMeal(), cat = null, lastShown = null;
+
+  // local (this phone) bits: current plate + recent foods
+  const lkey = k => `t1dtmd_${uid}_${k}`;
+  const lload = (k, d) => { try { return JSON.parse(localStorage.getItem(lkey(k))) ?? d; } catch { return d; } };
+  const lsave = (k, v) => { try { localStorage.setItem(lkey(k), JSON.stringify(v)); } catch {} };
+
+  // cloud save (debounced)
+  let saveT;
+  function persist() {
+    const st = { settings: S, mine, log: log.slice(0, 3000), updated: Date.now() };
+    const writeCache = dirty => { try { const c = JSON.parse(localStorage.getItem(cacheKey(uid)) || "{}"); c.state = st; c.dirty = dirty; localStorage.setItem(cacheKey(uid), JSON.stringify(c)); } catch {} };
+    writeCache(true);
+    clearTimeout(saveT);
+    saveT = setTimeout(() => B.saveState(uid, st).then(() => writeCache(false))
+      .catch(() => toast("Saved on phone · will sync when online")), 700);
+  }
+  window.addEventListener("online", () => { if (uid && !DEMO) persist(); });
+
+  const toObj = r => ({ id: r[0], n: r[1], alt: r[2], cat: r[3], u: r[4], h: r[5], o: r[6], rich: !!r[7] });
+  const rebuild = () => { ALL = FOODS.map(toObj).concat(mine.map(m => ({ cat: "mine", alt: "", ...m }))); };
+  const byId = id => ALL.find(f => f.id === id);
+  const carbsFor = (f, src, si, q) => {
+    const base = src === "out" ? (f.o ?? f.h) : (f.h ?? f.o);
+    const sz = UNITS[f.u] && UNITS[f.u].sizes;
+    return base * (sz ? sz[si][1] : 1) * q;
+  };
+  function portionText(it) {
+    const f = it.id && byId(it.id); if (!f) return it.label || "";
+    const sz = UNITS[f.u] && UNITS[f.u].sizes, bits = [];
+    if (f.h != null && f.o != null) bits.push(it.src === "out" ? "dhaba/bought" : "home");
+    if (sz) bits.push(sz[it.size][0].toLowerCase());
+    return [it.qty !== 1 ? it.qty + " ×" : "", bits.join(", ")].filter(Boolean).join(" ");
+  }
+
+  const lowLimit = () => S.bgUnit === "mmol" ? 3.9 : 70;
+  const highLimit = () => S.bgUnit === "mmol" ? 13.9 : 250;
+  const icrNow = () => S.perMeal ? (num(S.icrMeal[meal]) || num(S.icr)) : num(S.icr);
+  const roundStep = (x, st) => Math.round(x / st) * st;
+  const timeStr = t => new Date(t).toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" });
+
+  function calc() {
+    const carbs = plate.reduce((a, i) => a + i.carbs, 0), icr = icrNow();
+    const bg = S.corrOn ? num($("#bgNow").value) : null;
+    const r = { carbs, icr, bg, food: 0, corr: 0, rounded: 0, low: false, ready: false };
+    if (!icr || icr <= 0) return r;
+    r.food = carbs / icr;
+    if (bg != null) {
+      if (bg < lowLimit()) { r.low = true; return r; }
+      const t = num(S.target), isf = num(S.isf);
+      if (t && isf) r.corr = (bg - t) / isf;
+    }
+    r.rounded = roundStep(Math.max(0, r.food + r.corr), S.step);
+    r.ready = carbs > 0 || r.corr > 0;
+    return r;
+  }
+  const lastDose = () => { const cut = Date.now() - (num(S.iobHours) || 3) * 3600e3; return log.find(e => e.taken > 0 && e.t > cut); };
+
+  /* ---- rendering ---- */
+  function renderWho() {
+    const n = profile.name || uid;
+    $$("[data-avatar]").forEach(a => a.textContent = initials(n));
+    $$("[data-firstname]").forEach(a => a.textContent = n.split(/\s+/)[0]);
+    const icr = icrNow();
+    $("#ratioLabel").textContent = icr ? `· 1u : ${fmt(icr)} g` : "";
+    $("#ratioBig").textContent = icr ? `1 : ${fmt(icr)}` : "–";
+    $("#ratioBigSub").textContent = icr ? `1 unit for every ${fmt(icr)} g carbs${S.perMeal ? ` (${meal})` : ""}` : "set below";
+  }
+  function renderProfile() {
+    $("#pName").textContent = profile.name || uid;
+    $("#pId").textContent = "ID: " + uid;
+    const rows = [["Mobile", profile.mobile], ["Date of birth", profile.dob ? niceDate(profile.dob) : ""], ["Address", profile.address]].filter(r => r[1]);
+    $("#pKv").innerHTML = rows.map(([k, v]) => `<dt>${k}</dt><dd>${esc(v)}</dd>`).join("");
+    const st = planStatus(profile, cfg);
+    $("#planCard").innerHTML = `
+      <div class="row" style="align-items:flex-start"><div><h2 style="margin:0">Monthly plan</h2>
+        <p style="font-size:1.8rem;font-weight:300;margin:4px 0 0">₹${esc(profile.fee ?? "—")}<span class="muted small"> / month</span></p></div>
+        <span class="status ${st.cls}" style="flex:0 0 auto">${esc(st.text)}</span></div>
+      <p class="muted small" style="margin:6px 0 0">Next payment due ${niceDate(profile.paidUntil)}</p>
+      ${st.days != null && st.days <= 5 ? payButton(cfg, profile, uid) : ""}`;
+  }
+  function renderBanner(status) {
+    let h = "";
+    if (status.days != null && status.days < 0) h = `<div class="note warn"><b>Your plan ended on ${niceDate(profile.paidUntil)}.</b> Please pay within ${status.graceLeft} day${status.graceLeft === 1 ? "" : "s"} to keep using the app.${upiLink(cfg, profile.fee, "T1DTMD " + uid) ? ` <a href="${esc(upiLink(cfg, profile.fee, "T1DTMD " + uid))}" style="color:inherit;font-weight:600">Pay ₹${esc(profile.fee)} now</a>` : ""}</div>`;
+    else if (status.days != null && status.days <= 3) h = `<div class="note amber">Your plan renews in ${status.days} day${status.days === 1 ? "" : "s"} (₹${esc(profile.fee)}). See the User tab to pay.</div>`;
+    $("#planBanner").innerHTML = h;
+  }
+  function renderMeals() {
+    // meal buttons only matter when each meal has its own ratio
+    $("#meals").classList.toggle("hide", !S.perMeal);
+    if (!S.perMeal) meal = autoMeal();
+    $("#meals").innerHTML = MEALS.map(([k, l]) => `<button class="chip" aria-pressed="${k === meal}" data-meal="${k}">${l}</button>`).join("");
+  }
+  const shortName = n => n.replace(/\s*\(.*\)/, "").replace("Chai with 1 tsp sugar", "Chai + sugar");
+  function renderPlate() {
+    $("#plate").innerHTML = plate.map((it, i) => `
+      <li><button class="what" data-edit="${i}"><span>${esc(it.name)}</span><span class="muted small">${esc(portionText(it))}</span></button>
+      <span class="g">${fmt(it.carbs)} g</span><button class="x" data-del="${i}" aria-label="Remove ${esc(it.name)}">×</button></li>`).join("");
+    $("#plateEmpty").classList.toggle("hide", plate.length > 0);
+    $("#quick").innerHTML = QUICK_EXTRAS.map(byId).filter(Boolean).map(f => `<button class="chip add" data-quick="${f.id}">+ ${esc(shortName(f.n))}</button>`).join("");
+    lsave("plate", plate);
+  }
+  function renderDose() {
+    const r = calc(), icr = r.icr;
+    $("#setupCard").classList.add("hide");
+    $("#bgCard").classList.toggle("hide", !S.corrOn);
+    $("#bgHint").textContent = S.target && S.isf ? (S.bgUnit === "mmol" ? "mmol/L" : "mg/dL") : "set target & correction in User tab";
+    renderWho();
+    $("#penCarbs").textContent = `${fmt(r.carbs)} g`;
+    let unitsTxt = "–", lbl = "", sub = "carbs on your plate";
+    if (!icr) sub = "set your carb ratio";
+    else if (r.low) { unitsTxt = "Low"; sub = "treat the low first"; }
+    else if (r.ready) {
+      unitsTxt = fmt(r.rounded); lbl = r.rounded === 1 ? "unit" : "units";
+      sub = `carbs · ${fmt(r.carbs)} ÷ ${fmt(icr)} = ${fmt(r.food)}` + (r.corr ? ` ${r.corr > 0 ? "+" : "−"} ${fmt(Math.abs(r.corr))} corr.` : "");
+    }
+    const win = $("#penWindow");
+    $("#penUnits").textContent = unitsTxt; $("#penUnitsLbl").textContent = lbl; $("#penSub").textContent = sub;
+    win.classList.toggle("na", !(r.ready && !r.low));
+    if (unitsTxt !== lastShown && r.ready) { win.classList.remove("bump"); void win.offsetWidth; win.classList.add("bump"); }
+    lastShown = unitsTxt;
+    $("#penSave").disabled = !(icr && (r.ready || plate.length) && !r.low);
+
+    const notes = [];
+    if (r.low) notes.push(["warn", `<b>Your sugar is low (${fmt(r.bg)}).</b> Treat it first with about 15 g of fast sugar (glucose, juice, 3 tsp sugar in water), recheck in 15 minutes, then work out the meal dose.`]);
+    if (r.bg != null && r.bg >= highLimit()) notes.push(["amber", `<b>Sugar is high.</b> Check for ketones and follow your team's high sugar plan. Avoid hard exercise until it comes down.`]);
+    const ld = lastDose();
+    if (ld && r.corr > 0) notes.push(["amber", `You logged <b>${fmt(ld.taken)} units at ${timeStr(ld.t)}</b>. That insulin may still be working, so this correction (${fmt(r.corr)} units) could be too much.`]);
+    const wa = num(S.warnAbove);
+    if (r.ready && wa && r.rounded > wa) notes.push(["warn", `<b>${fmt(r.rounded)} units is more than your usual limit of ${fmt(wa)}.</b> Double-check the foods and amounts before injecting.`]);
+    if (plate.some(i => i.rich) && r.carbs > 0) notes.push(["amber", `Oily, buttery or creamy food on this plate. Sugar can rise again 3–5 hours later. Ask your team whether to split the dose for meals like this.`]);
+    if (r.ready && r.carbs > 0 && r.carbs < 10 && !r.corr) notes.push(["ok", `Under 10 g of carbs. Many people don't need insulin for a snack this small; follow what your team told you.`]);
+    $("#notes").innerHTML = notes.map(([c, t]) => `<div class="note ${c}">${t}</div>`).join("");
+    const serious = notes.filter(([c, t]) => c === "warn" || (c === "amber" && !t.startsWith("Oily"))).length;
+    if (serious && r.ready && !r.low) $("#penSub").textContent = "⚠ read the note on screen first";
+  }
+  function renderCats() {
+    const cats = [["", "All"]].concat(CATS, mine.length ? [["mine", "My foods"]] : []);
+    $("#cats").innerHTML = cats.map(([k, l]) => `<button class="chip" aria-pressed="${(k || null) === cat}" data-cat="${k}">${l}</button>`).join("");
+  }
+  const foodMeta = f => { const u = UNITS[f.u]; return `${fmt(f.h ?? f.o)} g${u && u.label ? " / " + u.label : ""}`; };
+  function renderResults() {
+    const q = $("#q").value.trim().toLowerCase();
+    let list;
+    if (q) { const w = q.split(/\s+/); list = ALL.filter(f => w.every(x => (f.n + " " + f.alt).toLowerCase().includes(x))); }
+    else if (cat) list = ALL.filter(f => f.cat === cat);
+    else { const r = recent.map(byId).filter(Boolean); list = r.length ? r : ALL.filter(f => f.cat === "bread").slice(0, 8); }
+    const head = !q && !cat ? `<li class="muted small" style="padding:2px 4px">${recent.length ? "Recently added" : "Popular"}</li>` : "";
+    $("#results").innerHTML = head + list.slice(0, 80).map(f =>
+      `<li><button data-food="${f.id}"><span>${esc(f.n)}</span><span class="meta">${foodMeta(f)}<span class="plus" aria-hidden="true">+</span></span></button></li>`).join("")
+      + (q && !list.length ? `<li class="muted" style="padding:10px 4px">No match for "${esc(q)}". Add it with "+ My own food".</li>` : "");
+  }
+  function renderLog() {
+    $("#logSub").textContent = `${log.length} saved`;
+    if (!log.length) { $("#logList").innerHTML = `<div class="card"><p class="empty">Nothing saved yet. After you work out a dose, tap the arrow and it shows up here.</p></div>`; return; }
+    const days = {};
+    log.forEach((e, i) => { const k = new Date(e.t).toDateString(); (days[k] = days[k] || []).push([e, i]); });
+    const td = new Date().toDateString(), yd = new Date(Date.now() - 864e5).toDateString();
+    $("#logList").innerHTML = Object.entries(days).slice(0, 30).map(([d, arr]) => {
+      const c = arr.reduce((a, [e]) => a + e.carbs, 0), u = arr.reduce((a, [e]) => a + (e.taken || 0), 0);
+      const title = d === td ? "Today" : d === yd ? "Yesterday" : new Date(arr[0][0].t).toLocaleDateString([], { weekday: "short", day: "numeric", month: "short" });
+      return `<div class="card day"><h2><span>${title}</span><span class="muted small">${fmt(c)} g · ${fmt(u)} u</span></h2>
+        ${arr.map(([e, i]) => `<div class="entry"><div class="t">${timeStr(e.t)}</div>
+          <div class="body"><div>${MEALS.find(m => m[0] === e.meal)?.[1] || ""} · ${fmt(e.carbs)} g${e.bg != null ? ` · sugar ${fmt(e.bg)}` : ""}</div>
+          <div class="items">${esc((e.items || []).join(", "))}</div></div>
+          <div class="u">${fmt(e.taken)} u</div><button class="x" data-logdel="${i}" aria-label="Delete entry">×</button></div>`).join("")}</div>`;
+    }).join("");
+  }
+  function renderMine() {
+    $("#mineList").innerHTML = mine.length ? mine.map((m, i) =>
+      `<li><span class="what">${esc(m.n)}<span class="muted small">${m.h != null ? fmt(m.h) + " g home" : ""}${m.h != null && m.o != null ? " · " : ""}${m.o != null ? fmt(m.o) + " g bought" : ""}</span></span>
+       <button class="x" data-minedel="${i}" aria-label="Delete ${esc(m.n)}">×</button></li>`).join("")
+      : `<li class="muted small">None yet.</li>`;
+  }
+
+  /* ---- settings (User + Settings tabs) ---- */
+  function fill() {
+    $("#perMeal").checked = S.perMeal; $("#icrOne").value = S.icr ?? "";
+    $$("#icrMealWrap input").forEach(i => i.value = S.icrMeal[i.dataset.meal] ?? "");
+    $("#step").value = String(S.step); $("#corrOn").checked = S.corrOn; $("#bgUnit").value = S.bgUnit;
+    $("#target").value = S.target ?? ""; $("#isf").value = S.isf ?? "";
+    $("#warnAbove").value = S.warnAbove ?? ""; $("#iobHours").value = S.iobHours ?? "";
+    toggles();
+  }
+  function toggles() {
+    $("#icrOneWrap").classList.toggle("hide", S.perMeal);
+    $("#icrMealWrap").classList.toggle("hide", !S.perMeal);
+    $("#corrWrap").classList.toggle("hide", !S.corrOn);
+    $("#target").placeholder = S.bgUnit === "mmol" ? "e.g. 6.5" : "e.g. 120";
+    $("#isf").placeholder = S.bgUnit === "mmol" ? "e.g. 2.5" : "e.g. 50";
+  }
+  function read() {
+    S.perMeal = $("#perMeal").checked; S.icr = num($("#icrOne").value);
+    $$("#icrMealWrap input").forEach(i => S.icrMeal[i.dataset.meal] = num(i.value));
+    if (S.perMeal && !S.icr) S.icr = S.icrMeal.lunch || S.icrMeal.dinner || S.icrMeal.breakfast || S.icrMeal.snack;
+    S.step = +$("#step").value; S.corrOn = $("#corrOn").checked; S.bgUnit = $("#bgUnit").value;
+    S.target = num($("#target").value); S.isf = num($("#isf").value);
+    S.warnAbove = num($("#warnAbove").value); S.iobHours = num($("#iobHours").value) || 3;
+    toggles(); persist(); renderMeals(); renderDose();
+  }
+
+  /* ---- sheets ---- */
+  function foodSheet(food, editIdx) {
+    const ex = editIdx != null ? plate[editIdx] : null;
+    const both = food.h != null && food.o != null;
+    const sizes = UNITS[food.u] && UNITS[food.u].sizes;
+    let src = ex ? ex.src : (food.h != null ? "home" : "out"), size = ex ? ex.size : (sizes ? 1 : 0), qty = ex ? ex.qty : 1;
+    openSheet(`
+      <h3>${esc(food.n)}</h3>
+      <p class="muted small" style="margin:0">${food.cat === "mine" ? "Your food" : "Typical values"}${food.rich ? " · oily / rich" : ""}</p>
+      ${both ? `<div class="seg" role="group" aria-label="Where it's from"><button data-src="home">Made at home</button><button data-src="out">Dhaba / bought</button></div>`
+        : `<p class="small muted" style="margin:10px 0 0">${food.h != null ? "Home-style portion" : "Dhaba / shop portion"}</p>`}
+      ${sizes ? `<div class="sizes" role="group" aria-label="Size">${sizes.map((s, i) => `<button class="chip" data-size="${i}">${s[0]}</button>`).join("")}</div>` : ""}
+      <div class="qty"><button data-q="-1" aria-label="Less">−</button><output id="qOut"></output><button data-q="1" aria-label="More">+</button>
+        <span class="muted small">${UNITS[food.u].label ? "× " + UNITS[food.u].label : "× portion"}</span></div>
+      <p class="big" id="cOut"></p>
+      <label class="field"><span>Know it's different? Type the carbs (g)</span>
+        <input type="number" inputmode="decimal" id="cOverride" placeholder="leave empty to use the estimate" value="${ex && ex.override ? fmt(ex.carbs) : ""}"></label>
+      <button class="cta block" id="addBtn"><span class="lbl">${ex ? "Update" : "Add to plate"}</span><span class="arr">${arrow}</span></button>
+      ${ex ? `<button class="pill-btn danger" id="rmBtn" style="width:100%;margin-top:10px">Remove from plate</button>` : ""}`, sh => {
+      const upd = () => {
+        $("#qOut", sh).textContent = fmt(qty);
+        const ov = num($("#cOverride", sh).value);
+        $("#cOut", sh).textContent = `${fmt(ov ?? carbsFor(food, src, size, qty))} g carbs`;
+        $$("[data-src]", sh).forEach(b => b.setAttribute("aria-pressed", b.dataset.src === src));
+        $$("[data-size]", sh).forEach(b => b.setAttribute("aria-pressed", +b.dataset.size === size));
+      };
+      sh.onclick = e => {
+        const b = e.target.closest("button"); if (!b) return;
+        const reset = () => $("#cOverride", sh).value = "";
+        if (b.dataset.src) { src = b.dataset.src; reset(); }
+        if (b.dataset.size) { size = +b.dataset.size; reset(); }
+        if (b.dataset.q) { qty = Math.max(0.5, qty + 0.5 * +b.dataset.q); reset(); }
+        if (b.id === "addBtn") {
+          const ov = num($("#cOverride", sh).value);
+          const item = { id: food.id, name: food.n, src, size, qty, rich: food.rich, carbs: ov ?? carbsFor(food, src, size, qty), override: ov != null };
+          if (ex) plate[editIdx] = item; else plate.push(item);
+          recent = [food.id].concat(recent.filter(x => x !== food.id)).slice(0, 12); lsave("recent", recent);
+          closeSheet(); renderPlate(); renderDose(); renderResults(); return;
+        }
+        if (b.id === "rmBtn") { plate.splice(editIdx, 1); closeSheet(); renderPlate(); renderDose(); return; }
+        upd();
+      };
+      $("#cOverride", sh).oninput = upd;
+      upd();
+    });
+  }
+  function labelSheet() {
+    openSheet(`
+      <h3>Packaged food</h3>
+      <p class="muted small" style="margin:0">Find "Carbohydrate" per 100 g on the pack.</p>
+      <label class="field"><span>What is it?</span><input type="text" id="lName" placeholder="e.g. Kurkure, Bournvita"></label>
+      <div class="row"><label class="field"><span>Carbs per 100 g</span><input type="number" inputmode="decimal" id="lPer"></label>
+        <label class="field"><span>Grams you'll eat</span><input type="number" inputmode="decimal" id="lG"></label></div>
+      <p class="big" id="lOut">0 g carbs</p>
+      <button class="cta block" id="lAdd"><span class="lbl">Add to plate</span><span class="arr">${arrow}</span></button>`, sh => {
+      const c = () => { const p = num($("#lPer", sh).value), g = num($("#lG", sh).value); return p && g ? p * g / 100 : 0; };
+      sh.oninput = () => $("#lOut", sh).textContent = `${fmt(c())} g carbs`;
+      $("#lAdd", sh).onclick = () => {
+        const v = c(); if (!v) return;
+        plate.push({ id: null, name: $("#lName", sh).value.trim() || "Packaged food", label: `${fmt(num($("#lG", sh).value))} g`, carbs: v, qty: 1, override: true, rich: false });
+        closeSheet(); renderPlate(); renderDose();
+      };
+    });
+  }
+  function customSheet() {
+    openSheet(`
+      <h3>Add my own food</h3>
+      <p class="muted small" style="margin:0">Mom's recipes, your usual dhaba, anything missing.</p>
+      <label class="field"><span>Name</span><input type="text" id="mName" placeholder="e.g. Mom's methi paratha"></label>
+      <label class="field"><span>Measured as</span><select id="mUnit"><option value="pc">1 piece (small / medium / large)</option><option value="bowl">1 katori (200 ml)</option>
+        <option value="glass">1 glass (250 ml)</option><option value="plate">1 plate</option><option value="fix">1 fixed portion</option></select></label>
+      <div class="row"><label class="field"><span>Carbs, home (g)</span><input type="number" inputmode="decimal" id="mH"></label>
+        <label class="field"><span>Carbs, bought (g)</span><input type="number" inputmode="decimal" id="mO" placeholder="optional"></label></div>
+      <div class="switch"><label for="mRich">Oily / buttery / creamy</label><input type="checkbox" id="mRich"></div>
+      <p class="muted small">Tip: a medium home roti is about 15 g carbs.</p>
+      <button class="cta block" id="mSave"><span class="lbl">Save food</span><span class="arr">${arrow}</span></button>`, sh => {
+      $("#mSave", sh).onclick = () => {
+        const n = $("#mName", sh).value.trim(), h = num($("#mH", sh).value), o = num($("#mO", sh).value);
+        if (!n || (h == null && o == null)) return toast("Add a name and at least one carb number");
+        mine.push({ id: "my_" + Date.now(), n, u: $("#mUnit", sh).value, h, o, rich: $("#mRich", sh).checked });
+        persist(); rebuild(); renderMine(); cat = "mine"; $("#q").value = ""; renderCats(); renderResults();
+        closeSheet(); toast("Saved to My foods");
+      };
+    });
+  }
+  function saveSheet() {
+    const r = calc(), suggested = r.ready ? r.rounded : 0;
+    const unitTxt = S.bgUnit === "mmol" ? "mmol/L" : "mg/dL";
+    openSheet(`
+      <h3>Save this meal</h3>
+      <p class="muted small" style="margin:0">${MEALS.find(m => m[0] === meal)[1]} · ${timeStr(Date.now())}</p>
+      <ul class="breakdown">
+        <li><span>Carbs</span><span>${fmt(r.carbs)} g</span></li>
+        <li><span>Food dose (${fmt(r.carbs)} ÷ ${fmt(r.icr)})</span><span>${fmt(r.food)} u</span></li>
+        ${r.bg != null ? `<li><span>Correction (sugar ${fmt(r.bg)} ${unitTxt})</span><span>${r.corr >= 0 ? "+" : "−"}${fmt(Math.abs(r.corr))} u</span></li>` : ""}
+        <li class="total"><span>Suggested (rounded to ${S.step == 0.5 ? "½" : "1"} unit)</span><span>${fmt(suggested)} u</span></li>
+      </ul>
+      <label class="field"><span>Units you actually took</span><input type="number" inputmode="decimal" id="sTaken" value="${fmt(suggested)}" step="${S.step}"></label>
+      <button class="cta block" id="sSave"><span class="lbl">Save to log</span><span class="arr">${arrow}</span></button>
+      <button class="pill-btn" id="sKeep" style="width:100%;margin-top:10px">Save and keep plate</button>`, sh => {
+      const go = clear => {
+        log.unshift({ t: Date.now(), meal, carbs: r.carbs, bg: r.bg, icr: r.icr, suggested, taken: num($("#sTaken", sh).value) ?? 0, items: plate.map(i => i.name + (i.qty !== 1 ? " ×" + i.qty : "")) });
+        persist();
+        if (clear) { plate = []; $("#bgNow").value = ""; renderPlate(); }
+        closeSheet(); renderDose(); renderLog(); toast("Saved to log");
+      };
+      $("#sSave", sh).onclick = () => go(true);
+      $("#sKeep", sh).onclick = () => go(false);
+    });
+  }
+
+  function showView(v) {
+    ["calc", "log", "user", "set"].forEach(x => $("#view-" + x).classList.toggle("hide", x !== v));
+    $$("#tabsUser button").forEach(b => b.setAttribute("aria-selected", b.dataset.view === v));
+    $("#pen").classList.toggle("hide", v !== "calc");
+    if (v === "log") renderLog();
+    if (v === "user" || v === "set") { fill(); renderMine(); renderProfile(); renderWho(); }
+    window.scrollTo(0, 0);
+  }
+
+  /* ---- events (bound once) ---- */
+  document.addEventListener("click", e => {
+    if ($("#screen-user").classList.contains("hide") && !e.target.closest("#tabsUser,#pen")) return;
+    const b = e.target.closest("button"); if (!b || sheet.contains(b)) return;
+    const d = b.dataset;
+    if (d.meal) { meal = d.meal; renderMeals(); renderDose(); }
+    else if (d.view && b.closest("#screen-user,#tabsUser")) showView(d.view);
+    else if (d.cat != null) { cat = d.cat || null; $("#q").value = ""; renderCats(); renderResults(); }
+    else if (d.food) foodSheet(byId(d.food));
+    else if (d.quick) foodSheet(byId(d.quick));
+    else if (d.edit != null) { const it = plate[+d.edit], f = it.id && byId(it.id); if (f) foodSheet(f, +d.edit); }
+    else if (d.del != null) { plate.splice(+d.del, 1); renderPlate(); renderDose(); }
+    else if (d.logdel != null) { if (confirm("Delete this log entry?")) { log.splice(+d.logdel, 1); persist(); renderLog(); renderDose(); } }
+    else if (d.minedel != null) { if (confirm("Delete this food?")) { mine.splice(+d.minedel, 1); persist(); rebuild(); renderMine(); renderCats(); } }
+  });
+  $("#q").addEventListener("input", () => { if ($("#q").value) { cat = null; renderCats(); } renderResults(); });
+  $("#bgNow").addEventListener("input", renderDose);
+  $("#penSave").addEventListener("click", saveSheet);
+  $("#openLabel").addEventListener("click", labelSheet);
+  $("#openCustom").addEventListener("click", customSheet);
+  $("#openCustom2").addEventListener("click", customSheet);
+  $("#setupSave").addEventListener("click", () => {
+    const v = num($("#setupIcr").value);
+    if (!v || v <= 0) return toast("Enter a number like 10");
+    S.icr = v; persist(); renderDose(); toast("Ratio saved");
+  });
+  ["#view-user", "#view-set"].forEach(id => { $(id).addEventListener("input", read); $(id).addEventListener("change", read); });
+  $("#exportBtn").addEventListener("click", () => {
+    const rows = [["date", "time", "meal", "carbs_g", "sugar", "ratio", "suggested_u", "taken_u", "foods"]]
+      .concat(log.map(e => { const d = new Date(e.t); return [d.toISOString().slice(0, 10), timeStr(e.t), e.meal, fmt(e.carbs), e.bg ?? "", e.icr, e.suggested, e.taken, (e.items || []).join("; ")]; }));
+    const csv = rows.map(r => r.map(v => `"${String(v).replace(/"/g, '""')}"`).join(",")).join("\n");
+    const a = document.createElement("a");
+    a.href = URL.createObjectURL(new Blob([csv], { type: "text/csv" }));
+    a.download = `t1dtmd-log-${uid}-${today()}.csv`; a.click();
+    setTimeout(() => URL.revokeObjectURL(a.href), 2000);
+  });
+
+  /* ---- full-screen ratio check, shown right after logging in ---- */
+  function showGate() {
+    const g = $("#ratioGate");
+    $("#rgHello").textContent = `Sat sri akal, ${(profile.name || uid).split(/\s+/)[0]}`;
+    $("#rgOne").classList.toggle("hide", S.perMeal);
+    $("#rgMeals").classList.toggle("hide", !S.perMeal);
+    $("#rgIcr").value = S.icr ?? "";
+    $$("[data-rgmeal]").forEach(i => i.value = S.icrMeal[i.dataset.rgmeal] ?? S.icr ?? "");
+    $("#rgLast").textContent = S.icr ? "Same as last time? Just tap Continue." : "";
+    $("#rgErr").textContent = "";
+    g.classList.remove("hide");
+    setTimeout(() => (S.perMeal ? $("[data-rgmeal]") : $("#rgIcr")).focus({ preventScroll: true }), 100);
+  }
+  function gateGo() {
+    const ok = v => v != null && v >= 1 && v <= 150;
+    if (S.perMeal) {
+      const vals = {}; let bad = false;
+      $$("[data-rgmeal]").forEach(i => { const v = num(i.value); if (!ok(v)) bad = true; vals[i.dataset.rgmeal] = v; });
+      if (bad) return $("#rgErr").textContent = "Fill all four with a number like 10.";
+      S.icrMeal = vals; S.icr = vals.lunch;
+    } else {
+      const v = num($("#rgIcr").value);
+      if (!ok(v)) return $("#rgErr").textContent = "Enter a number like 10 (grams of carbs for 1 unit).";
+      S.icr = v;
+    }
+    persist(); $("#ratioGate").classList.add("hide"); renderDose(); toast("Ratio saved");
+  }
+  $("#rgGo").addEventListener("click", gateGo);
+  $("#ratioGate").addEventListener("keydown", e => { if (e.key === "Enter") gateGo(); });
+
+  return {
+    start(id, p, st, c, status, fresh) {
+      uid = id; profile = p; cfg = c;
+      S = { ...DEFAULTS, ...(st.settings || {}) }; S.icrMeal = { ...DEFAULTS.icrMeal, ...(S.icrMeal || {}) };
+      log = st.log || []; mine = st.mine || [];
+      plate = lload("plate", []); recent = lload("recent", []);
+      cat = null; $("#q").value = ""; $("#bgNow").value = "";
+      rebuild(); renderBanner(status); renderMeals(); renderCats(); renderPlate(); renderResults(); renderDose(); showView("calc");
+      $("#ratioGate").classList.add("hide");
+      if (fresh || !icrNow()) showGate();
+    }
+  };
+}
+
+/* =====================================================================
+   ADMIN DASHBOARD
+   ===================================================================== */
+let A = null;
+async function startAdmin() {
+  if (!A) A = adminApp();
+  await A.start();
+  screen("admin");
+}
+
+function adminApp() {
+  let users = [], cfg = {}, filter = "all";
+
+  async function load() {
+    [users, cfg] = await Promise.all([B.listUsers(), B.getConfig()]);
+    users = users.filter(u => u.id !== ADMIN_ID).sort((a, b) => (a.name || "").localeCompare(b.name || ""));
+    render();
+  }
+  function render() {
+    const now = new Date();
+    $("#aMonth").innerHTML = `${now.toLocaleDateString([], { month: "short" })}<span style="color:#8F8784">${now.getFullYear()}</span>`;
+    const st = users.map(u => planStatus(u, cfg));
+    const active = st.filter(s => s.cls === "ok" || s.cls === "due").length;
+    const due = st.filter(s => s.cls === "due" || (s.cls === "exp" && !s.locked)).length;
+    const exp = st.filter(s => s.locked && s.cls !== "off").length;
+    const expected = users.filter((u, i) => st[i].cls !== "off").reduce((a, u) => a + (num(u.fee) || 0), 0);
+    $("#aExpected").textContent = `₹${expected.toLocaleString("en-IN")} expected per month`;
+    $("#aStats").innerHTML = [[users.length, "Users"], [active, "Active"], [due, "Due"], [exp, "Expired"]].map(([n, l]) => `<div><b>${n}</b><span>${l}</span></div>`).join("");
+    const F = [["all", "All"], ["due", "Due soon"], ["exp", "Expired"], ["off", "Paused"]];
+    $("#aFilter").innerHTML = F.map(([k, l]) => `<button class="chip" aria-pressed="${k === filter}" data-afilter="${k}">${l}</button>`).join("");
+    const q = $("#aQ").value.trim().toLowerCase();
+    const rows = users.map((u, i) => [u, st[i]]).filter(([u, s]) =>
+      (!q || `${u.name} ${u.id} ${u.mobile}`.toLowerCase().includes(q)) &&
+      (filter === "all" || (filter === "due" && (s.cls === "due" || (s.cls === "exp" && !s.locked))) || (filter === "exp" && s.locked && s.cls !== "off") || (filter === "off" && s.cls === "off")));
+    $("#aList").innerHTML = rows.length ? rows.map(([u, s]) => `
+      <li><button data-auser="${esc(u.id)}"><span class="avatar pink">${esc(initials(u.name))}</span>
+        <span class="nm"><b>${esc(u.name)}</b><span>${esc(u.id)}${u.mobile ? " · " + esc(u.mobile) : ""} · ₹${esc(u.fee ?? "—")}/mo</span></span>
+        <span class="status ${s.cls}">${esc(s.text)}</span></button></li>`).join("")
+      : `<li class="card"><p class="empty">${users.length ? "No one matches." : "No users yet. Add your first one below."}</p></li>`;
+  }
+
+  function genPw() { const c = "abcdefghjkmnpqrstuvwxyz23456789"; let s = ""; const r = crypto.getRandomValues(new Uint32Array(8)); r.forEach(x => s += c[x % c.length]); return s; }
+  function suggestId(name) {
+    const base = cleanId((name || "").split(/\s+/)[0]) || "user";
+    let id = base, n = 1; while (users.some(u => u.id === id) || id === ADMIN_ID) id = base + (++n);
+    return id;
+  }
+  function credText(u, pw) {
+    return `Your T1DTMD login\n${location.origin + location.pathname}\nUser ID: ${u.id}\nPassword: ${pw}\n\nKeep these safe. Ask your admin if you forget your password.`;
+  }
+
+  function newUserSheet() {
+    openSheet(`
+      <h3>New user</h3>
+      <label class="field"><span>Full name</span><input type="text" id="nName" autocomplete="off"></label>
+      <div class="grid2"><label class="field"><span>Date of birth</span><input type="date" id="nDob"></label>
+        <label class="field"><span>Mobile</span><input type="tel" id="nMob" inputmode="tel" placeholder="98xxxxxxxx"></label></div>
+      <label class="field"><span>Address</span><textarea id="nAddr" rows="2"></textarea></label>
+      <div class="grid2"><label class="field"><span>User ID (for login)</span><input type="text" id="nId" autocapitalize="none" spellcheck="false"></label>
+        <label class="field"><span>Password</span><input type="text" id="nPw" autocapitalize="none" spellcheck="false"></label></div>
+      <div class="grid2"><label class="field"><span>Monthly fee (₹)</span><input type="number" inputmode="decimal" id="nFee" value="${esc(cfg.fee ?? "")}"></label>
+        <label class="field"><span>Plan starts</span><input type="date" id="nStart" value="${today()}"></label></div>
+      <div class="switch"><label for="nPaid">First month paid now</label><input type="checkbox" id="nPaid" checked></div>
+      <p class="err" id="nErr"></p>
+      <button class="cta block" id="nGo"><span class="lbl">Create user</span><span class="arr">${arrow}</span></button>`, sh => {
+      $("#nPw", sh).value = genPw();
+      let idTouched = false;
+      $("#nId", sh).oninput = () => idTouched = true;
+      $("#nName", sh).oninput = () => { if (!idTouched) $("#nId", sh).value = suggestId($("#nName", sh).value); };
+      $("#nGo", sh).onclick = async e => {
+        const btn = e.currentTarget;
+        const name = $("#nName", sh).value.trim(), id = cleanId($("#nId", sh).value), pw = $("#nPw", sh).value.trim();
+        const fee = num($("#nFee", sh).value), start = $("#nStart", sh).value || today(), paid = $("#nPaid", sh).checked;
+        const err = m => $("#nErr", sh).textContent = m;
+        if (!name) return err("Enter the name.");
+        if (!id || id.length < 3) return err("User ID needs at least 3 letters/numbers.");
+        if (id === ADMIN_ID) return err("That ID is reserved.");
+        if (pw.length < 6) return err("Password must be at least 6 characters.");
+        const profile = { name, dob: $("#nDob", sh).value, mobile: $("#nMob", sh).value.trim(), address: $("#nAddr", sh).value.trim(),
+          fee, active: true, paidUntil: paid ? addMonths(start, 1) : start, createdAt: today() };
+        btn.disabled = true;
+        try {
+          await B.createUser(id, pw, profile);
+          if (paid && fee) await B.addPayment(id, { date: today(), amount: fee, months: 1, method: "UPI", note: "First month" }, profile.paidUntil);
+          await load();
+          credSheet({ id, ...profile }, pw);
+        } catch (er) { err(errText(er)); btn.disabled = false; }
+      };
+    });
+  }
+  function credSheet(u, pw) {
+    const txt = credText(u, pw);
+    const mob = String(u.mobile || "").replace(/\D/g, "");
+    const wa = `https://wa.me/${mob.length === 10 ? "91" + mob : mob}?text=${encodeURIComponent(txt)}`;
+    openSheet(`
+      <h3>${esc(u.name)} is ready</h3>
+      <p class="muted small" style="margin:0">Share these login details. You won't be able to see this password again.</p>
+      <div class="cred">User ID: <b>${esc(u.id)}</b><br>Password: <b>${esc(pw)}</b><br><span class="small" style="color:#B9B2AF">${esc(location.origin + location.pathname)}</span></div>
+      ${mob ? `<a class="cta block" style="text-decoration:none" href="${esc(wa)}" target="_blank" rel="noopener"><span class="lbl">Send on WhatsApp</span><span class="arr">${arrow}</span></a>` : ""}
+      <button class="pill-btn" id="cCopy" style="width:100%;margin-top:10px">Copy details</button>
+      <button class="pill-btn" id="cDone" style="width:100%;margin-top:10px">Done</button>`, sh => {
+      $("#cCopy", sh).onclick = async () => { try { await navigator.clipboard.writeText(txt); toast("Copied"); } catch { toast("Couldn't copy"); } };
+      $("#cDone", sh).onclick = closeSheet;
+    });
+  }
+
+  async function userSheet(id) {
+    const u = users.find(x => x.id === id); if (!u) return;
+    const s = planStatus(u, cfg);
+    openSheet(`<p class="muted">Loading…</p>`);
+    const [pays, st] = await Promise.all([B.listPayments(id).catch(() => []), B.loadState(id).catch(() => null)]);
+    const lastLogs = (st && st.log || []).slice(0, 5);
+    const ratio = st && st.settings && st.settings.icr;
+    openSheet(`
+      <div class="profile"><span class="avatar lg pink">${esc(initials(u.name))}</span>
+        <div><h3>${esc(u.name)}</h3><span class="muted small">ID: ${esc(u.id)} ${ratio ? `· ratio 1:${esc(ratio)}` : ""}</span><br><span class="status ${s.cls}">${esc(s.text)}</span></div></div>
+
+      <h2 style="margin-top:18px">Record a payment</h2>
+      <div class="grid2"><label class="field"><span>Amount (₹)</span><input type="number" inputmode="decimal" id="pAmt" value="${esc(u.fee ?? "")}"></label>
+        <label class="field"><span>Months</span><input type="number" inputmode="numeric" id="pMonths" value="1" min="1"></label></div>
+      <div class="grid2"><label class="field"><span>Paid on</span><input type="date" id="pDate" value="${today()}"></label>
+        <label class="field"><span>How</span><select id="pHow"><option>UPI</option><option>Cash</option><option>Bank transfer</option><option>Free</option></select></label></div>
+      <p class="small muted" id="pPreview"></p>
+      <button class="cta block" id="pGo"><span class="lbl">Save payment</span><span class="arr">${arrow}</span></button>
+
+      <h2 style="margin-top:22px">Details</h2>
+      <label class="field"><span>Full name</span><input type="text" id="eName" value="${esc(u.name)}"></label>
+      <div class="grid2"><label class="field"><span>Date of birth</span><input type="date" id="eDob" value="${esc(u.dob || "")}"></label>
+        <label class="field"><span>Mobile</span><input type="tel" id="eMob" value="${esc(u.mobile || "")}"></label></div>
+      <label class="field"><span>Address</span><textarea id="eAddr" rows="2">${esc(u.address || "")}</textarea></label>
+      <div class="grid2"><label class="field"><span>Monthly fee (₹)</span><input type="number" inputmode="decimal" id="eFee" value="${esc(u.fee ?? "")}"></label>
+        <label class="field"><span>Paid till</span><input type="date" id="ePaid" value="${esc(u.paidUntil || "")}"></label></div>
+      <div class="switch"><label for="eActive">Account active</label><input type="checkbox" id="eActive" ${u.active !== false ? "checked" : ""}></div>
+      <button class="pill-btn dark" id="eSave" style="width:100%">Save details</button>
+
+      <h2 style="margin-top:22px">Password</h2>
+      ${B.canResetPw ? `<div class="row"><input type="text" id="rPw" value="${genPw()}"><button class="pill-btn" id="rGo" style="flex:0 0 auto">Set new</button></div>`
+        : ``}
+
+      <h2 style="margin-top:22px">Payments</h2>
+      ${pays.length ? `<ul class="breakdown">${pays.map(p => `<li><span>${niceDate(p.date)} · ${esc(p.method || "")}${p.months > 1 ? ` · ${p.months} months` : ""}</span><span>₹${esc(p.amount)}</span></li>`).join("")}</ul>` : `<p class="small muted">No payments yet.</p>`}
+
+      <h2 style="margin-top:22px">Recent meals</h2>
+      ${lastLogs.length ? `<ul class="breakdown">${lastLogs.map(e => `<li><span>${new Date(e.t).toLocaleString([], { day: "numeric", month: "short", hour: "2-digit", minute: "2-digit" })} · ${fmt(e.carbs)} g</span><span>${fmt(e.taken)} u</span></li>`).join("")}</ul>` : `<p class="small muted">Nothing logged yet.</p>`}
+      <button class="pill-btn" id="uClose" style="width:100%;margin-top:14px">Close</button>
+      <h2 style="margin-top:26px">Delete user</h2>
+      <p class="small muted" style="margin:0 0 8px">Removes their login, details, food log and payment history. This can't be undone.</p>
+      <button class="pill-btn danger" id="uDel" style="width:100%">Delete ${esc(u.name)}</button>`, sh => {
+      const preview = () => {
+        const m = Math.max(1, parseInt($("#pMonths", sh).value) || 1);
+        const from = u.paidUntil && u.paidUntil > today() ? u.paidUntil : ($("#pDate", sh).value || today());
+        const until = addMonths(from, m);
+        $("#pPreview", sh).textContent = `New paid-till date: ${niceDate(until)}`;
+        return { m, until };
+      };
+      sh.oninput = e => { if (["pMonths", "pDate"].includes(e.target.id)) preview(); };
+      preview();
+      $("#pGo", sh).onclick = async () => {
+        const { m, until } = preview();
+        try {
+          await B.addPayment(id, { date: $("#pDate", sh).value || today(), amount: num($("#pAmt", sh).value) || 0, months: m, method: $("#pHow", sh).value }, until);
+          toast(`Paid till ${niceDate(until)}`); await load(); userSheet(id);
+        } catch (er) { toast(errText(er)); }
+      };
+      $("#eSave", sh).onclick = async () => {
+        const name = $("#eName", sh).value.trim(); if (!name) return toast("Name can't be empty");
+        try {
+          await B.updateUser(id, { name, dob: $("#eDob", sh).value, mobile: $("#eMob", sh).value.trim(), address: $("#eAddr", sh).value.trim(),
+            fee: num($("#eFee", sh).value), paidUntil: $("#ePaid", sh).value, active: $("#eActive", sh).checked });
+          toast("Saved"); await load(); userSheet(id);
+        } catch (er) { toast(errText(er)); }
+      };
+      const r = $("#rGo", sh);
+      if (r) r.onclick = async () => {
+        const pw = $("#rPw", sh).value.trim(); if (pw.length < 6) return toast("At least 6 characters");
+        await B.resetPassword(id, pw); credSheet(u, pw);
+      };
+      $("#uClose", sh).onclick = closeSheet;
+      $("#uDel", sh).onclick = async () => {
+        const typed = prompt(`To delete ${u.name}, type their user ID: ${u.id}`);
+        if (typed == null) return;
+        if (cleanId(typed) !== u.id) return toast("ID didn't match. Nothing deleted.");
+        try { await B.deleteUser(id); closeSheet(); toast(`${u.name} deleted`); await load(); }
+        catch (er) { toast(errText(er).includes("Something") && /function|rpc|schema cache/i.test(er.message || "") ? "Run the new SQL in Supabase first" : errText(er)); }
+      };
+    });
+  }
+
+  function fillCfg() { $("#cFee").value = cfg.fee ?? ""; $("#cGrace").value = cfg.grace ?? 7; $("#cUpi").value = cfg.upi ?? ""; $("#cPayee").value = cfg.payee ?? ""; }
+  function showView(v) {
+    ["users", "aset"].forEach(x => $("#view-" + x).classList.toggle("hide", x !== v));
+    $$("#tabsAdmin button").forEach(b => b.setAttribute("aria-selected", b.dataset.view === v));
+    if (v === "aset") fillCfg();
+    window.scrollTo(0, 0);
+  }
+
+  document.addEventListener("click", e => {
+    const b = e.target.closest("button"); if (!b || sheet.contains(b)) return;
+    if (!b.closest("#screen-admin,#tabsAdmin")) return;
+    if (b.dataset.view) showView(b.dataset.view);
+    else if (b.dataset.afilter) { filter = b.dataset.afilter; render(); }
+    else if (b.dataset.auser) userSheet(b.dataset.auser);
+  });
+  $("#aQ").addEventListener("input", render);
+  $("#aNew").addEventListener("click", newUserSheet);
+  $("#aChgPw").addEventListener("click", () => pwSheet(B));
+  $("#cSave").addEventListener("click", async () => {
+    const c = { fee: num($("#cFee").value), grace: num($("#cGrace").value) ?? 7, upi: $("#cUpi").value.trim(), payee: $("#cPayee").value.trim() };
+    try { await B.saveConfig(c); cfg = { ...cfg, ...c }; render(); toast("Saved"); } catch (er) { toast(errText(er)); }
+  });
+
+  return { async start() { await load(); showView("users"); } };
+}
+
+if ("serviceWorker" in navigator) navigator.serviceWorker.register("sw.js").catch(() => {});
+
+</script>
+</body>
+</html>
