@@ -222,6 +222,18 @@ input:focus,select:focus,textarea:focus{outline:none;border-color:var(--dark);ba
 @supports not ((backdrop-filter:blur(1px)) or (-webkit-backdrop-filter:blur(1px))){
   .card,.sheet,.tabs{background:rgba(255,246,242,.95)}
 }
+
+/* full-screen ratio check after login */
+.ratio-gate{position:fixed;inset:0;z-index:35;display:flex;align-items:center;justify-content:center;padding:calc(env(safe-area-inset-top,0px) + 24px) 16px calc(env(safe-area-inset-bottom,0px) + 24px);background:rgba(246,222,212,.55);-webkit-backdrop-filter:blur(28px) saturate(150%);backdrop-filter:blur(28px) saturate(150%);overflow-y:auto}
+.rg-card{width:100%;max-width:440px;background:rgba(255,255,255,.72);border:1px solid var(--glass-line);border-radius:var(--r-xl);padding:30px 22px 24px;text-align:center;box-shadow:0 20px 60px rgba(90,40,25,.18)}
+.rg-card .avatar{margin:0 auto 10px}
+.rg-card h1{font-weight:400;font-size:1.7rem;line-height:1.2;margin:4px 0 8px}
+.rg-one{display:flex;align-items:center;justify-content:center;gap:10px;margin:22px 0 6px;font-size:1.2rem;color:var(--ink-2)}
+.rg-one input{width:130px;text-align:center;font-size:2.6rem;font-weight:300;padding:6px 10px;border-radius:20px}
+.rg-one input::-webkit-inner-spin-button,.rg-one input::-webkit-outer-spin-button{-webkit-appearance:none;margin:0}
+.rg-one input{-moz-appearance:textfield}
+.rg-meals{text-align:left;margin-top:16px}
+.rg-meals input{font-size:1.3rem;text-align:center}
 </style>
 </head>
 <body>
@@ -268,6 +280,26 @@ input:focus,select:focus,textarea:focus{outline:none;border-color:var(--dark);ba
   </div>
   <div class="card dark">
     <p class="small" style="margin:0">Need a dose right now? Carbs ÷ the carb ratio your doctor gave you = units of rapid insulin. Check your sugar, and if you're unsure, call your diabetes team.</p>
+  </div>
+</section>
+
+<!-- ======================= RATIO CHECK (shows after login) ======================= -->
+<section class="ratio-gate hide" id="ratioGate" role="dialog" aria-modal="true" aria-labelledby="rgTitle">
+  <div class="rg-card">
+    <span class="avatar lg pink" data-avatar>?</span>
+    <p class="muted" id="rgHello" style="margin:0">Sat sri akal</p>
+    <h1 id="rgTitle">Confirm your carb ratio</h1>
+    <p class="muted small" style="margin:0">1 unit of insulin covers how many grams of carbs? Use the number your doctor gave you.</p>
+    <div class="rg-one" id="rgOne"><span>1 unit :</span><input type="number" inputmode="decimal" id="rgIcr" placeholder="10" aria-label="Grams of carbs per unit"><span>g</span></div>
+    <div class="grid2 rg-meals hide" id="rgMeals">
+      <label class="field"><span>Breakfast</span><input type="number" inputmode="decimal" data-rgmeal="breakfast"></label>
+      <label class="field"><span>Lunch</span><input type="number" inputmode="decimal" data-rgmeal="lunch"></label>
+      <label class="field"><span>Snack</span><input type="number" inputmode="decimal" data-rgmeal="snack"></label>
+      <label class="field"><span>Dinner</span><input type="number" inputmode="decimal" data-rgmeal="dinner"></label>
+    </div>
+    <p class="small muted" id="rgLast" style="margin:6px 0 0"></p>
+    <p class="err" id="rgErr"></p>
+    <button class="cta block" id="rgGo"><span class="lbl">Continue</span><span class="arr"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><path d="m9 6 6 6-6 6"/></svg></span></button>
   </div>
 </section>
 
@@ -902,14 +934,16 @@ $("#loginForm").addEventListener("submit", async e => {
   const id = cleanId($("#liId").value), pw = $("#liPw").value;
   if (!id || !pw) return $("#liErr").textContent = "Enter your user ID and password.";
   const btn = e.submitter; if (btn) btn.disabled = true;
-  try { await B.login(id, pw); } catch (er) { $("#liErr").textContent = errText(er) + (DEMO ? " (demo mode: admin / admin123)" : ` [${(er && (er.code || er.message)) || "?"} · ${id}]`); }
+  freshLogin = true;
+  try { await B.login(id, pw); } catch (er) {
+    freshLogin = false; $("#liErr").textContent = errText(er) + (DEMO ? " (demo mode: admin / admin123)" : ` [${(er && (er.code || er.message)) || "?"} · ${id}]`); }
   if (btn) btn.disabled = false;
 });
 document.addEventListener("click", e => { if (e.target.closest("[data-act=logout]")) { if (confirm("Log out?")) B.logout(); } });
 
-let started = null;
+let started = null, freshLogin = false;
 B.onAuth(async id => {
-  if (!id) { started = null; screen("login"); return; }
+  if (!id) { started = null; $("#ratioGate").classList.add("hide"); screen("login"); return; }
   if (started === id) return;
   started = id;
   screen("loading");
@@ -954,7 +988,8 @@ async function startUser(id) {
     return;
   }
   if (!U) U = userApp();
-  U.start(id, profile, st || {}, cfg, status);
+  const fresh = freshLogin; freshLogin = false;
+  U.start(id, profile, st || {}, cfg, status, fresh);
   screen("user");
 }
 
@@ -1067,7 +1102,7 @@ function userApp() {
   }
   function renderDose() {
     const r = calc(), icr = r.icr;
-    $("#setupCard").classList.toggle("hide", !!icr);
+    $("#setupCard").classList.add("hide");
     $("#bgCard").classList.toggle("hide", !S.corrOn);
     $("#bgHint").textContent = S.target && S.isf ? (S.bgUnit === "mmol" ? "mmol/L" : "mg/dL") : "set target & correction in User tab";
     renderWho();
@@ -1321,14 +1356,46 @@ function userApp() {
     setTimeout(() => URL.revokeObjectURL(a.href), 2000);
   });
 
+  /* ---- full-screen ratio check, shown right after logging in ---- */
+  function showGate() {
+    const g = $("#ratioGate");
+    $("#rgHello").textContent = `Sat sri akal, ${(profile.name || uid).split(/\s+/)[0]}`;
+    $("#rgOne").classList.toggle("hide", S.perMeal);
+    $("#rgMeals").classList.toggle("hide", !S.perMeal);
+    $("#rgIcr").value = S.icr ?? "";
+    $$("[data-rgmeal]").forEach(i => i.value = S.icrMeal[i.dataset.rgmeal] ?? S.icr ?? "");
+    $("#rgLast").textContent = S.icr ? "Same as last time? Just tap Continue." : "";
+    $("#rgErr").textContent = "";
+    g.classList.remove("hide");
+    setTimeout(() => (S.perMeal ? $("[data-rgmeal]") : $("#rgIcr")).focus({ preventScroll: true }), 100);
+  }
+  function gateGo() {
+    const ok = v => v != null && v >= 1 && v <= 150;
+    if (S.perMeal) {
+      const vals = {}; let bad = false;
+      $$("[data-rgmeal]").forEach(i => { const v = num(i.value); if (!ok(v)) bad = true; vals[i.dataset.rgmeal] = v; });
+      if (bad) return $("#rgErr").textContent = "Fill all four with a number like 10.";
+      S.icrMeal = vals; S.icr = vals.lunch;
+    } else {
+      const v = num($("#rgIcr").value);
+      if (!ok(v)) return $("#rgErr").textContent = "Enter a number like 10 (grams of carbs for 1 unit).";
+      S.icr = v;
+    }
+    persist(); $("#ratioGate").classList.add("hide"); renderDose(); toast("Ratio saved");
+  }
+  $("#rgGo").addEventListener("click", gateGo);
+  $("#ratioGate").addEventListener("keydown", e => { if (e.key === "Enter") gateGo(); });
+
   return {
-    start(id, p, st, c, status) {
+    start(id, p, st, c, status, fresh) {
       uid = id; profile = p; cfg = c;
       S = { ...DEFAULTS, ...(st.settings || {}) }; S.icrMeal = { ...DEFAULTS.icrMeal, ...(S.icrMeal || {}) };
       log = st.log || []; mine = st.mine || [];
       plate = lload("plate", []); recent = lload("recent", []);
       cat = null; $("#q").value = ""; $("#bgNow").value = "";
       rebuild(); renderBanner(status); renderMeals(); renderCats(); renderPlate(); renderResults(); renderDose(); showView("calc");
+      $("#ratioGate").classList.add("hide");
+      if (fresh || !icrNow()) showGate();
     }
   };
 }
