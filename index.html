@@ -712,7 +712,7 @@ const esc = s => String(s ?? "").replace(/[&<>"']/g, c => ({ "&": "&amp;", "<": 
 const fmt = n => (Math.round(n * 10) / 10).toString();
 const num = v => { const x = parseFloat(String(v ?? "").replace(",", ".")); return isFinite(x) ? x : null; };
 const today = () => new Date().toISOString().slice(0, 10);
-const cleanId = s => String(s || "").trim().toLowerCase().replace(/[^a-z0-9._-]/g, "");
+const cleanId = s => String(s || "").trim().toLowerCase().split("@")[0].replace(/[^a-z0-9._-]/g, "");
 const idToEmail = id => `${cleanId(id)}@${ID_DOMAIN}`;
 const emailToId = e => String(e || "").split("@")[0];
 const DEMO = !SUPABASE_URL || !SUPABASE_KEY;
@@ -899,7 +899,7 @@ $("#loginForm").addEventListener("submit", async e => {
   const id = cleanId($("#liId").value), pw = $("#liPw").value;
   if (!id || !pw) return $("#liErr").textContent = "Enter your user ID and password.";
   const btn = e.submitter; if (btn) btn.disabled = true;
-  try { await B.login(id, pw); } catch (er) { $("#liErr").textContent = errText(er); }
+  try { await B.login(id, pw); } catch (er) { $("#liErr").textContent = errText(er) + (DEMO ? " (demo mode: admin / admin123)" : ` [${(er && (er.code || er.message)) || "?"} · ${id}]`); }
   if (btn) btn.disabled = false;
 });
 document.addEventListener("click", e => { if (e.target.closest("[data-act=logout]")) { if (confirm("Log out?")) B.logout(); } });
