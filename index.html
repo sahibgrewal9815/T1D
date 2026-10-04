@@ -1089,6 +1089,9 @@ function userApp() {
     $("#planBanner").innerHTML = h;
   }
   function renderMeals() {
+    // meal buttons only matter when each meal has its own ratio
+    $("#meals").classList.toggle("hide", !S.perMeal);
+    if (!S.perMeal) meal = autoMeal();
     $("#meals").innerHTML = MEALS.map(([k, l]) => `<button class="chip" aria-pressed="${k === meal}" data-meal="${k}">${l}</button>`).join("");
   }
   const shortName = n => n.replace(/\s*\(.*\)/, "").replace("Chai with 1 tsp sugar", "Chai + sugar");
@@ -1196,7 +1199,7 @@ function userApp() {
     S.step = +$("#step").value; S.corrOn = $("#corrOn").checked; S.bgUnit = $("#bgUnit").value;
     S.target = num($("#target").value); S.isf = num($("#isf").value);
     S.warnAbove = num($("#warnAbove").value); S.iobHours = num($("#iobHours").value) || 3;
-    toggles(); persist(); renderDose();
+    toggles(); persist(); renderMeals(); renderDose();
   }
 
   /* ---- sheets ---- */
